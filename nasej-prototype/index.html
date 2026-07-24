@@ -688,6 +688,104 @@ html[dir="rtl"] .flow { animation-direction: reverse; }
 @keyframes spark-dot-in { to { opacity: 1; } }
 @keyframes dot-scale { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.6); } }
 
+/* ---------- مكتبات النظام ---------- */
+.lib-meta { font-size: .85rem; color: var(--space-vlight); margin-block-end: 18px; }
+.lib-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-block-end: 22px; }
+.lib-tab {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--space-light); color: var(--space-vlight);
+  font-weight: 700; font-size: .92rem; padding: 10px 18px; border-radius: 999px;
+  background: rgba(12,18,34,.6);
+}
+.lib-tab:hover { border-color: var(--purple-light); color: #FFFFFF; }
+.lib-tab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--purple-base), var(--purple-darkest));
+  border-color: var(--purple-base); color: #FFFFFF;
+  box-shadow: 0 6px 20px rgba(124,58,237,.35);
+}
+.lib-tab .cnt {
+  font-family: var(--font-en); font-size: .72rem; font-weight: 800;
+  color: var(--cyan-base); background: rgba(34,211,238,.1);
+  border: 1px solid rgba(34,211,238,.35); border-radius: 999px; padding: 1px 8px;
+}
+.lib-tab[aria-selected="true"] .cnt { color: #FFFFFF; background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); }
+.lib-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+.lib-card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(147,151,159,.18); border-radius: 16px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+  animation: lib-in .4s var(--ease) both;
+}
+.lib-card:hover { border-color: rgba(34,211,238,.45); box-shadow: 0 8px 26px rgba(34,211,238,.12); }
+.lib-card:nth-child(2) { animation-delay: .06s; }
+.lib-card:nth-child(3) { animation-delay: .12s; }
+.lib-card:nth-child(4) { animation-delay: .18s; }
+.lib-card:nth-child(5) { animation-delay: .24s; }
+@keyframes lib-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.lib-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.lib-id { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+.lib-name { font-weight: 700; font-size: 1rem; line-height: 1.45; }
+.lib-facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.fact {
+  font-size: .74rem; font-weight: 700; color: var(--space-vlight);
+  border: 1px solid rgba(147,151,159,.3); border-radius: 6px; padding: 3px 9px;
+  font-family: var(--font-en);
+}
+.fact.fa { font-family: inherit; }
+.fact.cy { color: var(--cyan-base); border-color: rgba(34,211,238,.4); }
+.fact.gd { color: var(--gold-light); border-color: rgba(245,158,11,.45); }
+.lib-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-block-start: auto; }
+.export-btn {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--purple-base); color: var(--purple-vlight);
+  font-weight: 700; font-size: .85rem; padding: 9px 18px; border-radius: 10px;
+  background: rgba(124,58,237,.1);
+}
+.export-btn:hover { background: rgba(124,58,237,.22); color: #FFFFFF; }
+.export-btn .xbar {
+  position: absolute; inset-inline-start: 0; bottom: 0; height: 2px; width: 0;
+  background: var(--cyan-base); transition: width 1.1s linear;
+}
+.export-btn.running { color: var(--cyan-base); border-color: rgba(34,211,238,.5); }
+.export-btn.running .xbar { width: 100%; }
+.export-btn.done { border-color: var(--gold-base); color: var(--gold-light); background: rgba(245,158,11,.08); cursor: default; }
+.export-btn.done .xbar { width: 100%; background: var(--gold-base); }
+/* الموجة الصوتية */
+.vo-controls { display: flex; align-items: center; gap: 12px; }
+.vo-play {
+  width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto;
+  border: 1px solid var(--cyan-base); color: var(--cyan-base);
+  display: grid; place-items: center; background: rgba(34,211,238,.08);
+}
+.vo-play:hover { background: rgba(34,211,238,.18); }
+.vo-wave { display: flex; align-items: flex-end; gap: 2px; height: 28px; flex: 1; min-width: 0; overflow: hidden; }
+.vo-wave span { width: 3px; border-radius: 2px; background: var(--cyan-base); opacity: .45; transform-origin: bottom; flex: 0 0 auto; }
+.vo-wave.playing span { animation: wave-b .9s ease-in-out infinite alternate; opacity: .9; }
+@keyframes wave-b { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+.vo-time { font-family: var(--font-en); font-size: .8rem; color: var(--cyan-base); white-space: nowrap; }
+.vo-note { font-size: .72rem; color: var(--space-light); }
+/* مكعب المعاينة ثلاثي الأبعاد */
+.cube-wrap { width: 56px; height: 56px; perspective: 260px; flex: 0 0 auto; }
+.cube {
+  width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(30deg);
+  animation: cube-spin 10s linear infinite;
+}
+.cube i {
+  position: absolute; inset: 0;
+  border: 1.5px solid var(--cyan-base); opacity: .5;
+  background: rgba(34,211,238,.04);
+}
+.cube i:nth-child(1) { transform: rotateY(0deg) translateZ(28px); }
+.cube i:nth-child(2) { transform: rotateY(90deg) translateZ(28px); }
+.cube i:nth-child(3) { transform: rotateY(180deg) translateZ(28px); }
+.cube i:nth-child(4) { transform: rotateY(270deg) translateZ(28px); }
+.cube i:nth-child(5) { transform: rotateX(90deg) translateZ(28px); }
+.cube i:nth-child(6) { transform: rotateX(-90deg) translateZ(28px); }
+@keyframes cube-spin { from { transform: rotateX(-20deg) rotateY(30deg); } to { transform: rotateX(-20deg) rotateY(390deg); } }
+
 /* ظهور الأقسام عند التمرير */
 @media (prefers-reduced-motion: no-preference) {
   section.reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s var(--ease), transform .55s var(--ease); }
@@ -861,6 +959,22 @@ html[dir="rtl"] .flow { animation-direction: reverse; }
 
 <hr class="divider">
 
+<!-- ========== 5-ب. مكتبات النظام ========== -->
+<section id="library" class="fx">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title" data-i18n="libTitle"></h2>
+      <span class="live-chip"><span class="lc-dot" aria-hidden="true"></span><span data-i18n="libAutoSave"></span></span>
+    </div>
+    <p class="section-sub" data-i18n="libSub"></p>
+    <p class="lib-meta" data-i18n="libRepoMeta"></p>
+    <div class="lib-tabs" role="tablist" id="libTabs"></div>
+    <div id="libPanel" role="tabpanel"></div>
+  </div>
+</section>
+
+<hr class="divider">
+
 <!-- ========== 6. الاختبار الصارم ========== -->
 <section id="tests">
   <div class="container">
@@ -1024,6 +1138,42 @@ const I18N = {
     artC_pass: 'مطابق لقالب v26',
     artC_note: 'هذا الصمام يوضح لماذا لا يستطيع النظام «اختلاق» محتوى: القيمة النائبة تُرفض آلياً قبل وصولها إلى المراجع البشري.',
 
+    libTitle: 'مكتبات النظام',
+    libSub: 'كل ما ينتجه الخط يُحفَظ تلقائياً في مستودع مصنّف، قابلاً للتصدير وإعادة الاستخدام — بيانات توضيحية.',
+    libAutoSave: 'حفظ تلقائي',
+    libRepoMeta: '4 مكتبات · 16 أصلاً · مستودع توضيحي',
+    tabScenarios: 'السيناريوهات',
+    tabVoice: 'التعليق الصوتي',
+    tabAssets: 'العناصر ثلاثية الأبعاد',
+    tabExp: 'التجارب المكتملة',
+    stApprovedLib: 'معتمد',
+    stWip: 'قيد العمل',
+    stPendingLib: 'بانتظار الاعتماد',
+    stGenerating: 'قيد التوليد',
+    scnScenes: '{n} مشاهد',
+    scnKps: '{n} نقطة معرفة',
+    scnQs: '{n} سؤالاً · بنك 8-ب',
+    voLangAr: 'عربي',
+    voLangEn: 'إنجليزي',
+    voCov: 'تغطية المشاهد {s}',
+    voNote: 'محاكاة تشغيل — بلا صوت',
+    voPlay: 'تشغيل',
+    voPause: 'إيقاف',
+    astPolys: '{n} مضلع',
+    astAnimated: 'متحرك',
+    astRigged: 'هيكل حركي',
+    astExt: 'طفاية حريق CO2',
+    astWorkshop: 'بيئة الورشة الصناعية',
+    astMoon: 'مركبة الهبوط القمرية',
+    astAtom: 'نموذج الذرة التفاعلي',
+    astBtr: 'فراشة بهيكل حركي',
+    expPkg: 'تصدير حزمة WebXR',
+    expReport: 'تقرير الاختبارات',
+    expDurFact: '{n} دقيقة · ضمن حد 42',
+    libExport: 'تصدير',
+    libExporting: 'يُجهَّز…',
+    libExported: 'تم التجهيز — توضيحي',
+
     testsTitle: 'الاختبار الصارم',
     testsSub: '11 نقطة تحقق تجتازها كل تجربة قبل التسليم.',
     runTests: 'تشغيل الفحص',
@@ -1158,6 +1308,42 @@ const I18N = {
     artC_pass: 'Conforms to template v26',
     artC_note: 'This valve shows why the system cannot "fabricate" content: a placeholder is rejected automatically before it ever reaches the human reviewer.',
 
+    libTitle: 'System Libraries',
+    libSub: 'Everything the line produces is saved automatically into a classified repository, exportable and reusable — demonstration data.',
+    libAutoSave: 'Auto-save',
+    libRepoMeta: '4 libraries · 16 assets · demonstration repository',
+    tabScenarios: 'Scenarios',
+    tabVoice: 'Voice-over',
+    tabAssets: '3D Elements',
+    tabExp: 'Completed Experiences',
+    stApprovedLib: 'Approved',
+    stWip: 'In progress',
+    stPendingLib: 'Awaiting approval',
+    stGenerating: 'Generating',
+    scnScenes: '{n} scenes',
+    scnKps: '{n} knowledge points',
+    scnQs: '{n} questions · bank 8-B',
+    voLangAr: 'Arabic',
+    voLangEn: 'English',
+    voCov: 'Scene coverage {s}',
+    voNote: 'Playback simulation — no audio',
+    voPlay: 'Play',
+    voPause: 'Pause',
+    astPolys: '{n} polys',
+    astAnimated: 'Animated',
+    astRigged: 'Rigged',
+    astExt: 'CO2 fire extinguisher',
+    astWorkshop: 'Industrial workshop environment',
+    astMoon: 'Lunar lander',
+    astAtom: 'Interactive atom model',
+    astBtr: 'Rigged butterfly',
+    expPkg: 'Export WebXR package',
+    expReport: 'Test report',
+    expDurFact: '{n} min · within the 42 limit',
+    libExport: 'Export',
+    libExporting: 'Preparing…',
+    libExported: 'Prepared — demo',
+
     testsTitle: 'Rigorous Testing',
     testsSub: '11 checkpoints every experience passes before delivery.',
     runTests: 'Run checks',
@@ -1194,7 +1380,33 @@ const DEMO_DATA = {
     { value: 78,  goal: false, spark: [64, 68, 71, 74, 76, 77, 78] },
     { value: 100, goal: true,  spark: [100, 100, 100, 100, 100, 100, 100] },
     { value: 35,  goal: true,  spark: [41, 40, 38, 37, 36, 35, 35] }
-  ]
+  ],
+  library: {
+    scenarios: [
+      { id: 'scn1', code: 'SCN-SAFE-FIRE-01',    nameKey: 'expFire',   scenes: 5, kps: 12, qs: 40, status: 'ok', date: '14/07', size: '1.2 MB' },
+      { id: 'scn2', code: 'SCN-MOON-JOURNEY-06', nameKey: 'expMoon',   scenes: 6, kps: 14, qs: 46, status: 'ok', date: '02/07', size: '1.4 MB' },
+      { id: 'scn3', code: 'SCN-CHEM-ATOM-09',    nameKey: 'expChem',   scenes: 5, kps: 11, qs: 38, status: 'ok', date: '19/07', size: '1.1 MB' },
+      { id: 'scn4', code: 'SCN-HRCT-01',         nameKey: 'expHrct',   scenes: 5, kps: 10, qs: 34, status: 'pending', size: '0.9 MB' },
+      { id: 'scn5', code: 'SCN-BTRFLY-01',       nameKey: 'expBtrfly', scenes: 4, kps: 9,  qs: 30, status: 'wip', size: '0.7 MB' }
+    ],
+    voices: [
+      { id: 'vo1', code: 'VO-SAFE-FIRE-01-AR',    nameKey: 'expFire', langKey: 'voLangAr', cov: '5/5', dur: '12:40', durS: 760, status: 'ok' },
+      { id: 'vo2', code: 'VO-SAFE-FIRE-01-EN',    nameKey: 'expFire', langKey: 'voLangEn', cov: '5/5', dur: '11:55', durS: 715, status: 'ok' },
+      { id: 'vo3', code: 'VO-MOON-JOURNEY-06-AR', nameKey: 'expMoon', langKey: 'voLangAr', cov: '6/6', dur: '14:05', durS: 845, status: 'ok' },
+      { id: 'vo4', code: 'VO-CHEM-ATOM-09-AR',    nameKey: 'expChem', langKey: 'voLangAr', cov: '3/5', dur: '07:20', durS: 440, status: 'gen' }
+    ],
+    assets: [
+      { id: 'ast1', code: 'AST-EXTINGUISHER-CO2', nameKey: 'astExt',      polys: '8.4K', status: 'ok' },
+      { id: 'ast2', code: 'AST-WORKSHOP-ENV',     nameKey: 'astWorkshop', polys: '120K', status: 'ok' },
+      { id: 'ast3', code: 'AST-LUNAR-LANDER',     nameKey: 'astMoon',     polys: '45K',  status: 'ok' },
+      { id: 'ast4', code: 'AST-ATOM-MODEL',       nameKey: 'astAtom',     polys: '12K',  status: 'ok', anim: true },
+      { id: 'ast5', code: 'AST-BUTTERFLY-RIG',    nameKey: 'astBtr',      polys: '9.8K', status: 'wip', rigged: true }
+    ],
+    experiences: [
+      { id: 'lx1', code: 'SAFE-FIRE-01',    nameKey: 'expFire', ver: 'v1.0', size: '42 MB', device: 'Meta Quest 3', tests: '11/11', dur: 35, status: 'ok' },
+      { id: 'lx2', code: 'MOON-JOURNEY-06', nameKey: 'expMoon', ver: 'v1.0', size: '51 MB', device: 'Meta Quest 3', tests: '11/11', dur: 38, status: 'ok' }
+    ]
+  }
 };
 
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C12 8 15 11 22 12 15 13 12 16 12 22 12 16 9 13 2 12 9 11 12 8 12 2Z"/></svg>';
@@ -1215,7 +1427,12 @@ const state = {
   testsCount: 0,
   testsRunning: false,
   kpiShown: false,
-  tickerIdx: 0
+  tickerIdx: 0,
+  libTab: 'scn',
+  libExports: {},
+  voPlaying: null,
+  voElapsed: {},
+  voTimer: null
 };
 
 const $ = (s, r) => (r || document).querySelector(s);
@@ -1249,6 +1466,7 @@ function applyLang() {
   renderAudit();
   renderTests(true);
   renderKpis();
+  renderLibrary();
   renderJourney(true);
 }
 
@@ -1626,6 +1844,146 @@ function animateKpis() {
   requestAnimationFrame(frame);
 }
 
+/* ---------- مكتبات النظام ---------- */
+const PLAY_ICO = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+const PAUSE_ICO = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
+
+function libStatusChip(status) {
+  if (status === 'ok') return `<span class="badge badge-gold">${t('stApprovedLib')}</span>`;
+  if (status === 'pending') return `<span class="badge badge-purple">${t('stPendingLib')}</span>`;
+  if (status === 'gen') return `<span class="badge badge-purple">${t('stGenerating')}</span>`;
+  return `<span class="badge badge-purple">${t('stWip')}</span>`;
+}
+function exportBtn(id, labelKey) {
+  const done = state.libExports[id] === 'done';
+  const label = done ? t('libExported') : t(labelKey || 'libExport');
+  return `<button class="export-btn${done ? ' done' : ''}" data-export="${id}" data-label="${labelKey || 'libExport'}">${label}<span class="xbar"></span></button>`;
+}
+function fmtClock(s) {
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+function renderLibrary() {
+  const L = DEMO_DATA.library;
+  const tabs = [
+    { k: 'scn', label: t('tabScenarios'), n: L.scenarios.length },
+    { k: 'vo',  label: t('tabVoice'),     n: L.voices.length },
+    { k: 'ast', label: t('tabAssets'),    n: L.assets.length },
+    { k: 'exp', label: t('tabExp'),       n: L.experiences.length }
+  ];
+  $('#libTabs').innerHTML = tabs.map(tb =>
+    `<button class="lib-tab" role="tab" id="tab-${tb.k}" aria-selected="${state.libTab === tb.k}" data-tab="${tb.k}">${tb.label}<span class="cnt">${tb.n}</span></button>`
+  ).join('');
+  renderLibPanel();
+}
+function renderLibPanel() {
+  const L = DEMO_DATA.library;
+  const panel = $('#libPanel');
+  let html = '<div class="lib-grid">';
+  if (state.libTab === 'scn') {
+    L.scenarios.forEach(s => {
+      html += `<div class="lib-card">` +
+        `<div class="lib-head"><div><div class="exp-code">${s.code}</div><div class="lib-name">${t(s.nameKey)}</div></div>${libStatusChip(s.status)}</div>` +
+        `<div class="lib-facts">` +
+          `<span class="fact fa cy">${fmt(t('scnScenes'), { n: s.scenes })}</span>` +
+          `<span class="fact fa cy">${fmt(t('scnKps'), { n: s.kps })}</span>` +
+          `<span class="fact fa cy">${fmt(t('scnQs'), { n: s.qs })}</span>` +
+          `<span class="fact">v26</span><span class="fact">${s.size}</span>` +
+          (s.date ? `<span class="fact gd">${s.date}</span>` : '') +
+        `</div>` +
+        `<div class="lib-actions">${exportBtn(s.id)}</div></div>`;
+    });
+  } else if (state.libTab === 'vo') {
+    L.voices.forEach(v => {
+      const playing = state.voPlaying === v.id;
+      let bars = '';
+      for (let i = 0; i < 26; i++) {
+        bars += `<span style="height:${6 + ((i * 37) % 19)}px;animation-delay:${(i % 8) * 90}ms"></span>`;
+      }
+      const elapsed = state.voElapsed[v.id] || 0;
+      html += `<div class="lib-card">` +
+        `<div class="lib-head"><div><div class="exp-code">${v.code}</div><div class="lib-name">${t(v.nameKey)}</div></div>${libStatusChip(v.status)}</div>` +
+        `<div class="vo-controls">` +
+          `<button class="vo-play" data-vo="${v.id}" data-dur="${v.durS}" data-durstr="${v.dur}" aria-label="${playing ? t('voPause') : t('voPlay')}">${playing ? PAUSE_ICO : PLAY_ICO}</button>` +
+          `<div class="vo-wave${playing ? ' playing' : ''}" aria-hidden="true">${bars}</div>` +
+          `<span class="vo-time" id="voTime-${v.id}">${fmtClock(elapsed)} / ${v.dur}</span>` +
+        `</div>` +
+        `<div class="vo-note">${t('voNote')}</div>` +
+        `<div class="lib-facts">` +
+          `<span class="fact fa cy">${fmt(t('voCov'), { s: v.cov })}</span>` +
+          `<span class="fact">WAV 48kHz</span>` +
+          `<span class="fact fa">${t(v.langKey)}</span>` +
+        `</div>` +
+        `<div class="lib-actions">${exportBtn(v.id)}</div></div>`;
+    });
+  } else if (state.libTab === 'ast') {
+    L.assets.forEach(a => {
+      html += `<div class="lib-card">` +
+        `<div class="lib-head"><div class="lib-id">` +
+          `<div class="cube-wrap" aria-hidden="true"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>` +
+          `<div><div class="exp-code">${a.code}</div><div class="lib-name">${t(a.nameKey)}</div></div>` +
+        `</div>${libStatusChip(a.status)}</div>` +
+        `<div class="lib-facts">` +
+          `<span class="fact fa cy">${fmt(t('astPolys'), { n: a.polys })}</span>` +
+          `<span class="fact">GLB</span><span class="fact">PBR</span>` +
+          (a.anim ? `<span class="fact fa gd">${t('astAnimated')}</span>` : '') +
+          (a.rigged ? `<span class="fact fa gd">${t('astRigged')}</span>` : '') +
+        `</div>` +
+        `<div class="lib-actions">${exportBtn(a.id)}</div></div>`;
+    });
+  } else {
+    L.experiences.forEach(x => {
+      html += `<div class="lib-card">` +
+        `<div class="lib-head"><div><div class="exp-code">${x.code}</div><div class="lib-name">${t(x.nameKey)}</div></div>${libStatusChip(x.status)}</div>` +
+        `<div class="lib-facts">` +
+          `<span class="fact">${x.ver}</span><span class="fact">${x.size}</span><span class="fact">${x.device}</span>` +
+          `<span class="fact gd">${x.tests}</span>` +
+          `<span class="fact fa gd">${fmt(t('expDurFact'), { n: x.dur })}</span>` +
+        `</div>` +
+        `<div class="lib-actions">${exportBtn(x.id + '-pkg', 'expPkg')}${exportBtn(x.id + '-rpt', 'expReport')}</div></div>`;
+    });
+  }
+  panel.innerHTML = html + '</div>';
+}
+function startExport(btn) {
+  const id = btn.dataset.export;
+  if (state.libExports[id]) return;
+  state.libExports[id] = 'running';
+  btn.innerHTML = `${t('libExporting')}<span class="xbar"></span>`;
+  void btn.offsetWidth;
+  btn.classList.add('running');
+  setTimeout(() => {
+    state.libExports[id] = 'done';
+    const b = $(`[data-export="${id}"]`);
+    if (b) {
+      b.classList.remove('running');
+      b.classList.add('done');
+      b.innerHTML = `${t('libExported')}<span class="xbar"></span>`;
+    }
+  }, RM() ? 60 : 1200);
+}
+function stopVo() {
+  if (state.voTimer) { clearInterval(state.voTimer); state.voTimer = null; }
+  state.voPlaying = null;
+}
+function toggleVo(id, durS, durStr) {
+  if (state.voPlaying === id) { stopVo(); renderLibPanel(); return; }
+  stopVo();
+  state.voPlaying = id;
+  state.voElapsed[id] = state.voElapsed[id] || 0;
+  state.voTimer = setInterval(() => {
+    state.voElapsed[id]++;
+    if (state.voElapsed[id] >= durS) {
+      state.voElapsed[id] = 0;
+      stopVo();
+      renderLibPanel();
+      return;
+    }
+    const el = $('#voTime-' + id);
+    if (el) el.textContent = `${fmtClock(state.voElapsed[id])} / ${durStr}`;
+  }, 1000);
+  renderLibPanel();
+}
+
 /* ---------- التهيئة ---------- */
 $('#langToggle').addEventListener('click', () => {
   state.lang = state.lang === 'ar' ? 'en' : 'ar';
@@ -1648,6 +2006,27 @@ $$('.valve-check').forEach(btn => {
   });
 });
 $('#btnRunTests').addEventListener('click', runTests);
+$('#libTabs').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-tab]');
+  if (!b) return;
+  state.libTab = b.dataset.tab;
+  renderLibrary();
+});
+$('#libTabs').addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const order = ['scn', 'vo', 'ast', 'exp'];
+  const rtl = document.documentElement.dir === 'rtl';
+  const step = (e.key === 'ArrowRight') !== rtl ? 1 : -1;
+  state.libTab = order[(order.indexOf(state.libTab) + step + 4) % 4];
+  renderLibrary();
+  $('#tab-' + state.libTab).focus();
+});
+$('#libPanel').addEventListener('click', (e) => {
+  const x = e.target.closest('[data-export]');
+  if (x) { startExport(x); return; }
+  const v = e.target.closest('[data-vo]');
+  if (v) toggleVo(v.dataset.vo, Number(v.dataset.dur), v.dataset.durstr);
+});
 
 const kpiObserver = new IntersectionObserver((entries) => {
   entries.forEach(en => {
