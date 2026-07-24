@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F172A">
+<meta name="description" content="نظام ناسج الذكي — خط إنتاج الأمد من تحليل الاحتياج إلى تجربة WebXR في 7 أيام. نموذج أولي تفاعلي ببيانات توضيحية.">
+<title>نظام ناسج الذكي — الأمد</title>
+<style>
+/* ==========================================================
+   NASEJ-PROTO-01 — الهوية البصرية v26 — قيم إلزامية حصراً
+   ========================================================== */
+:root {
+  /* Deep Space Blue — الخلفية الأساسية */
+  --space-darkest: #0C1222;
+  --space-base:    #0F172A;
+  --space-light:   #4B515F;
+  --space-vlight:  #93979F;
+  /* Electric Purple — اللون الرئيسي */
+  --purple-darkest: #632EBE;
+  --purple-base:    #7C3AED;
+  --purple-light:   #9D6BF2;
+  --purple-vlight:  #C4A6F7;
+  /* Sunrise Gold — الإنجاز والاعتماد */
+  --gold-darkest: #C47E09;
+  --gold-base:    #F59E0B;
+  --gold-light:   #F8B648;
+  --gold-vlight:  #FAD391;
+  /* Plasma Cyan — البيانات */
+  --cyan-base: #22D3EE;
+
+  --font-ar: "Orleen","IBM Plex Sans Arabic","Tajawal",system-ui,sans-serif;
+  --font-en: "Giga Sans","Inter",system-ui,sans-serif;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  background: var(--space-base);
+  color: #FFFFFF;
+  font-family: var(--font-ar);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  /* الأرقام لاتينية دائماً */
+  font-feature-settings: "lnum" 1, "tnum" 0;
+  font-variant-numeric: lining-nums;
+  overflow-x: hidden;
+}
+html[lang="en"] body { font-family: var(--font-en); }
+
+/* ---------- هيكل عام ---------- */
+.container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 20px; }
+section { padding-block: 72px; position: relative; }
+.section-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  margin-block-end: 8px;
+}
+.section-sub {
+  color: var(--space-vlight);
+  font-size: 1rem;
+  margin-block-end: 32px;
+  max-width: 720px;
+}
+.divider {
+  height: 1px; border: 0;
+  background: linear-gradient(90deg, transparent, var(--space-light), transparent);
+  opacity: .4;
+}
+
+/* ---------- أزرار ---------- */
+button {
+  font: inherit; color: inherit; cursor: pointer;
+  border: 0; background: none;
+  min-height: 44px; min-width: 44px;
+  border-radius: 12px;
+  transition: background-color .25s var(--ease), color .25s var(--ease),
+              box-shadow .25s var(--ease), border-color .25s var(--ease),
+              opacity .25s var(--ease), transform .25s var(--ease);
+}
+button:focus-visible, a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--cyan-base);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple-base), var(--purple-darkest));
+  color: #FFFFFF; font-weight: 700; font-size: 1.05rem;
+  padding: 14px 32px;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, .35);
+}
+.btn-primary:hover { background: linear-gradient(135deg, var(--purple-light), var(--purple-base)); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-secondary {
+  background: rgba(124, 58, 237, .12);
+  border: 1px solid var(--purple-base);
+  color: var(--purple-vlight);
+  font-weight: 600; padding: 10px 24px;
+}
+.btn-secondary:hover { background: rgba(124, 58, 237, .25); color: #FFFFFF; }
+.btn-ghost {
+  border: 1px solid var(--space-light);
+  color: var(--space-vlight);
+  font-weight: 600; padding: 10px 24px;
+}
+.btn-ghost:hover { border-color: var(--space-vlight); color: #FFFFFF; }
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold-base), var(--gold-darkest));
+  color: var(--space-darkest); font-weight: 700; padding: 10px 26px;
+}
+.btn-gold:hover { background: linear-gradient(135deg, var(--gold-light), var(--gold-base)); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ---------- 1. البطل ---------- */
+.hero {
+  min-height: 92svh;
+  display: flex; flex-direction: column;
+  background: radial-gradient(120% 90% at 50% 0%, var(--space-base) 0%, var(--space-darkest) 100%);
+  padding-block: 0;
+  overflow: hidden;
+}
+.starfield, .starfield::after {
+  content: ""; position: absolute; inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+.starfield {
+  background-image:
+    radial-gradient(1.2px 1.2px at 22px 34px, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 120px 90px, rgba(255,255,255,.5) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 210px 150px, rgba(196,166,247,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 300px 60px, rgba(255,255,255,.45) 50%, transparent 51%),
+    radial-gradient(1.1px 1.1px at 80px 200px, rgba(34,211,238,.55) 50%, transparent 51%),
+    radial-gradient(1px 1px at 260px 240px, rgba(255,255,255,.4) 50%, transparent 51%),
+    radial-gradient(1.3px 1.3px at 160px 300px, rgba(250,211,145,.55) 50%, transparent 51%),
+    radial-gradient(1px 1px at 340px 190px, rgba(255,255,255,.5) 50%, transparent 51%);
+  background-size: 380px 340px;
+  animation: star-drift 180s linear infinite;
+  opacity: .8;
+}
+.starfield::after {
+  background-image:
+    radial-gradient(1px 1px at 60px 120px, rgba(255,255,255,.35) 50%, transparent 51%),
+    radial-gradient(1px 1px at 180px 40px, rgba(157,107,242,.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 290px 280px, rgba(255,255,255,.3) 50%, transparent 51%);
+  background-size: 420px 380px;
+  animation: star-drift 240s linear infinite reverse;
+}
+@keyframes star-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 0 -680px; }
+}
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-block: 20px;
+  position: relative; z-index: 2;
+}
+.brand-logo { display: block; width: 132px; height: auto; }
+.lang-toggle {
+  border: 1px solid var(--space-light);
+  color: #FFFFFF; font-weight: 700;
+  padding: 8px 18px; font-size: .95rem;
+  background: rgba(12, 18, 34, .5);
+}
+.lang-toggle:hover { border-color: var(--purple-light); color: var(--purple-vlight); }
+.hero-body {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  text-align: center; position: relative; z-index: 2;
+  padding-block: 48px 72px;
+}
+.hero-title {
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 800; line-height: 1.25;
+  background: linear-gradient(180deg, #FFFFFF 55%, var(--purple-vlight));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: #FFFFFF;
+}
+.hero-tagline {
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem);
+  color: var(--purple-vlight); font-weight: 600;
+  margin-block-start: 12px;
+}
+.hero-def {
+  max-width: 760px; margin: 28px auto 0;
+  color: var(--space-vlight); font-size: 1.02rem;
+}
+.hero-slogan {
+  margin: 28px auto 0; max-width: 700px;
+  font-size: clamp(1.15rem, 3vw, 1.55rem);
+  font-weight: 700; color: var(--gold-light);
+}
+.hero-cta { margin-block-start: 36px; }
+
+/* ---------- 2. لوحة التجارب ---------- */
+.board-grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.exp-card {
+  text-align: start; width: 100%;
+  background: linear-gradient(180deg, rgba(12,18,34,.9), rgba(12,18,34,.55));
+  border: 1px solid rgba(147, 151, 159, .18);
+  border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  color: #FFFFFF;
+}
+.exp-card.clickable:hover { border-color: var(--purple-base); box-shadow: 0 8px 28px rgba(124,58,237,.22); }
+.exp-code {
+  font-family: var(--font-en);
+  font-size: .8rem; letter-spacing: .06em;
+  color: var(--cyan-base); font-weight: 700;
+}
+.exp-name { font-size: 1.12rem; font-weight: 700; line-height: 1.4; }
+.exp-meta { font-size: .85rem; color: var(--space-vlight); }
+.mini-progress { display: flex; gap: 5px; }
+.mini-progress span {
+  flex: 1; height: 6px; border-radius: 3px;
+  background: var(--space-light); opacity: .5;
+}
+.mini-progress span.done { background: var(--gold-base); opacity: 1; }
+.mini-progress span.active { background: var(--purple-base); opacity: 1; }
+.exp-status { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .8rem; font-weight: 700;
+  border-radius: 999px; padding: 4px 12px;
+}
+.badge-gold  { color: var(--gold-light); background: rgba(245, 158, 11, .12); border: 1px solid rgba(245,158,11,.4); }
+.badge-purple{ color: var(--purple-vlight); background: rgba(124, 58, 237, .14); border: 1px solid rgba(124,58,237,.45); }
+.day-counter { font-size: .85rem; color: var(--space-vlight); white-space: nowrap; }
+.day-counter b { color: var(--cyan-base); font-family: var(--font-en); }
+.board-hint { margin-block-start: 20px; font-size: .9rem; color: var(--space-vlight); }
+
+/* ---------- 3. خط الإنتاج ---------- */
+.time-banner {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(124, 58, 237, .14);
+  border: 1px solid var(--purple-base);
+  color: #FFFFFF; font-weight: 700; font-size: 1.05rem;
+  border-radius: 999px; padding: 10px 24px;
+  margin-block-end: 36px;
+}
+.time-banner .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold-base); }
+.pipeline {
+  display: flex; flex-direction: column; gap: 0;
+  align-items: stretch;
+}
+.stage-card {
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(147,151,159,.18);
+  border-radius: 16px; padding: 18px;
+  flex: 1; min-width: 0;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.stage-card .stage-num {
+  font-family: var(--font-en); font-weight: 800; font-size: .8rem;
+  color: var(--space-vlight); letter-spacing: .08em;
+}
+.stage-card .stage-name { font-weight: 700; font-size: .98rem; line-height: 1.45; margin-block-start: 4px; }
+.stage-card.st-active { border-color: var(--purple-base); box-shadow: 0 0 0 1px var(--purple-base), 0 10px 30px rgba(124,58,237,.25); }
+.stage-card.st-done   { border-color: rgba(245,158,11,.55); }
+.stage-card.st-locked { opacity: .55; }
+.gate {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px 6px; flex: 0 0 auto;
+}
+.gate-star {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 2px solid var(--space-light);
+  background: rgba(12,18,34,.8);
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.gate-star svg { width: 24px; height: 24px; display: block; }
+.gate-star svg path { fill: var(--space-light); transition: fill .3s var(--ease); }
+.gate.g-pending .gate-star { border-color: var(--purple-base); animation: gate-pulse 1.6s var(--ease) infinite; }
+.gate.g-pending .gate-star svg path { fill: var(--purple-light); }
+.gate.g-approved .gate-star { border-color: var(--gold-base); box-shadow: 0 0 18px rgba(245,158,11,.45); }
+.gate.g-approved .gate-star svg path { fill: var(--gold-base); }
+@keyframes gate-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,.5); }
+  50%      { box-shadow: 0 0 0 9px rgba(124,58,237,0); }
+}
+.gate-role { font-size: .74rem; font-weight: 700; color: var(--space-vlight); text-align: center; white-space: nowrap; }
+.gate.g-approved .gate-role { color: var(--gold-light); }
+.gate.g-pending .gate-role { color: var(--purple-vlight); }
+.gate-state { font-size: .68rem; color: var(--space-vlight); text-align: center; white-space: nowrap; }
+.pipeline-note { margin-block-start: 26px; font-size: .9rem; color: var(--space-vlight); }
+
+@media (min-width: 1024px) {
+  .pipeline { flex-direction: row; align-items: center; }
+  .gate { flex-direction: column; padding: 0 8px; }
+}
+@media (max-width: 1023.5px) {
+  .pipeline { max-width: 460px; }
+  .gate { align-self: center; }
+}
+
+/* ---------- 4. رحلة التجربة ---------- */
+.journey-head {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: center; justify-content: space-between;
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(147,151,159,.18);
+  border-radius: 16px; padding: 20px;
+  margin-block-end: 20px;
+}
+.journey-head .exp-code { font-size: .85rem; }
+.journey-title-line { font-size: 1.25rem; font-weight: 800; }
+.journey-day {
+  font-weight: 700; font-size: 1rem; color: #FFFFFF;
+  background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.4);
+  border-radius: 999px; padding: 8px 18px; white-space: nowrap;
+}
+.journey-day b { color: var(--cyan-base); font-family: var(--font-en); }
+.journey-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.mastery-rule {
+  font-size: .88rem; color: var(--space-vlight);
+  border-inline-start: 3px solid var(--gold-base);
+  padding-inline-start: 12px; margin-block: 18px;
+}
+.journey-stage-panel {
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(124,58,237,.5);
+  border-radius: 16px; padding: 22px;
+  margin-block-end: 18px;
+}
+.journey-stage-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-block-end: 14px; }
+.journey-stage-name { font-weight: 800; font-size: 1.1rem; }
+.agent-strip {
+  background: rgba(12,18,34,.85);
+  border: 1px solid rgba(34,211,238,.25);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: .9rem; min-height: 52px;
+}
+.agent-strip-title {
+  font-size: .78rem; font-weight: 700; color: var(--cyan-base);
+  letter-spacing: .04em; margin-block-end: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.agent-strip-title .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan-base); animation: gate-pulse 1.4s infinite; }
+.agent-line { color: var(--space-vlight); line-height: 1.9; }
+.agent-line.current { color: #FFFFFF; }
+.agent-line .caret {
+  display: inline-block; width: 2px; height: 1em;
+  background: var(--cyan-base); vertical-align: text-bottom;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+.check-valve { margin-block-start: 16px; }
+.check-valve-title { font-size: .78rem; font-weight: 700; color: var(--purple-vlight); letter-spacing: .04em; margin-block-end: 8px; }
+.check-list { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: .9rem; }
+.check-list li { display: flex; align-items: center; gap: 10px; color: var(--space-vlight); transition: color .3s var(--ease); }
+.check-list li .tick {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--space-light);
+  display: inline-grid; place-items: center; flex: 0 0 auto;
+  font-size: .7rem; color: transparent;
+  transition: all .3s var(--ease);
+}
+.check-list li.ok { color: #FFFFFF; }
+.check-list li.ok .tick { border-color: var(--gold-base); background: rgba(245,158,11,.15); color: var(--gold-base); }
+.approver-card {
+  margin-block-start: 16px;
+  border: 1px solid rgba(245,158,11,.45);
+  background: rgba(245,158,11,.07);
+  border-radius: 12px; padding: 16px;
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;
+}
+.approver-role { font-weight: 800; font-size: 1rem; color: var(--gold-light); }
+.approver-sub { font-size: .85rem; color: var(--space-vlight); }
+.approver-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.audit-log {
+  margin-block-start: 22px;
+  background: rgba(12,18,34,.85);
+  border: 1px solid rgba(147,151,159,.18);
+  border-radius: 12px; padding: 16px;
+}
+.audit-log h3 { font-size: .9rem; color: var(--space-vlight); margin-block-end: 10px; }
+.audit-log ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: .86rem; }
+.audit-log li { display: flex; gap: 10px; align-items: baseline; color: var(--space-vlight); }
+.audit-log li .a-role { color: var(--gold-light); font-weight: 700; white-space: nowrap; }
+.audit-log li .a-time { font-family: var(--font-en); color: var(--cyan-base); font-size: .78rem; white-space: nowrap; }
+.audit-log li.a-return .a-role { color: var(--purple-vlight); }
+.audit-empty { color: var(--space-light); font-size: .85rem; }
+.journey-done {
+  margin-block-start: 18px; text-align: center;
+  border: 1px solid rgba(245,158,11,.5);
+  background: rgba(245,158,11,.08);
+  border-radius: 16px; padding: 26px;
+  font-weight: 800; font-size: 1.15rem; color: var(--gold-light);
+}
+
+/* ---------- 5. عمق المخرجات ---------- */
+.artifact-panels { display: flex; flex-direction: column; gap: 14px; }
+.artifact-panels details {
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(147,151,159,.18);
+  border-radius: 16px; overflow: hidden;
+}
+.artifact-panels summary {
+  cursor: pointer; list-style: none;
+  padding: 18px 22px; font-weight: 700; font-size: 1.02rem;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 44px;
+}
+.artifact-panels summary::-webkit-details-marker { display: none; }
+.artifact-panels summary .chev { margin-inline-start: auto; transition: transform .25s var(--ease); color: var(--space-vlight); }
+.artifact-panels details[open] summary .chev { transform: rotate(180deg); }
+.artifact-panels summary .p-tag {
+  font-size: .72rem; font-weight: 800; letter-spacing: .05em;
+  color: var(--purple-vlight); background: rgba(124,58,237,.15);
+  border-radius: 6px; padding: 3px 9px; font-family: var(--font-en);
+}
+.artifact-body { padding: 0 22px 22px; }
+.kp-card {
+  border: 1px solid rgba(34,211,238,.3);
+  border-radius: 12px; padding: 18px;
+  background: rgba(12,18,34,.85);
+  display: flex; flex-direction: column; gap: 10px; font-size: .95rem;
+}
+.kp-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.kp-label { color: var(--cyan-base); font-weight: 700; white-space: nowrap; font-size: .85rem; }
+.kp-value { color: #FFFFFF; }
+.kp-verbatim {
+  border-inline-start: 3px solid var(--cyan-base);
+  padding-inline-start: 12px; color: #FFFFFF; line-height: 1.9;
+}
+.q-card { display: flex; flex-direction: column; gap: 12px; font-size: .95rem; }
+.q-text { font-weight: 700; font-size: 1.05rem; line-height: 1.7; }
+.q-options { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.q-options li {
+  border: 1px solid rgba(147,151,159,.25); border-radius: 10px;
+  padding: 10px 14px; color: var(--space-vlight);
+}
+.q-options li.correct {
+  border-color: var(--gold-base); color: #FFFFFF;
+  background: rgba(245,158,11,.09);
+}
+.q-options li .q-fb { display: block; font-size: .82rem; margin-block-start: 4px; color: var(--space-vlight); }
+.q-options li.correct .q-fb { color: var(--gold-light); }
+.q-tag {
+  font-size: .82rem; color: var(--purple-vlight);
+  border: 1px dashed rgba(124,58,237,.5); border-radius: 8px; padding: 8px 12px;
+}
+.valve-compare { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.valve-box {
+  border: 1px solid rgba(147,151,159,.25); border-radius: 12px;
+  padding: 16px; background: rgba(12,18,34,.85);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.valve-excerpt {
+  font-size: .9rem; line-height: 1.9; color: var(--space-vlight);
+  border-inline-start: 3px solid var(--space-light); padding-inline-start: 12px;
+}
+.valve-excerpt em { color: #FFFFFF; font-style: normal; }
+.valve-result { font-size: .88rem; font-weight: 700; border-radius: 10px; padding: 10px 14px; display: none; }
+.valve-result.show { display: block; }
+.valve-result.reject { color: #FFFFFF; background: rgba(124,58,237,.0); border: 1px solid var(--purple-base); background: rgba(99,46,190,.25); }
+.valve-result.pass { color: var(--gold-light); border: 1px solid var(--gold-base); background: rgba(245,158,11,.12); }
+.valve-note { margin-block-start: 16px; font-size: .88rem; color: var(--space-vlight); }
+
+/* ---------- 6. الاختبار الصارم ---------- */
+.tests-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-block-end: 24px; }
+.tests-counter {
+  font-family: var(--font-en); font-weight: 800; font-size: 1.3rem;
+  color: var(--cyan-base);
+  background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.35);
+  border-radius: 12px; padding: 8px 18px;
+}
+.tests-counter.all-pass { color: var(--gold-base); border-color: rgba(245,158,11,.5); background: rgba(245,158,11,.08); }
+.tests-grid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.test-item {
+  display: flex; align-items: center; gap: 12px;
+  border: 1px solid rgba(147,151,159,.2); border-radius: 12px;
+  padding: 12px 16px; font-size: .9rem; color: var(--space-vlight);
+  background: rgba(12,18,34,.7);
+  transition: all .3s var(--ease);
+}
+.test-item .tick {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--space-light);
+  display: inline-grid; place-items: center; flex: 0 0 auto;
+  font-size: .72rem; color: transparent;
+  transition: all .3s var(--ease);
+}
+.test-item.ok { color: #FFFFFF; border-color: rgba(245,158,11,.45); }
+.test-item.ok .tick { border-color: var(--gold-base); background: rgba(245,158,11,.15); color: var(--gold-base); }
+.tests-final { margin-block-start: 22px; font-size: .92rem; color: var(--space-vlight); }
+.tests-final code { font-family: var(--font-en); color: var(--cyan-base); font-size: .85rem; }
+
+/* ---------- 7. المؤشرات ---------- */
+.kpi-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.kpi-card {
+  background: linear-gradient(180deg, rgba(12,18,34,.92), rgba(12,18,34,.6));
+  border: 1px solid rgba(147,151,159,.18);
+  border-radius: 16px; padding: 22px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.kpi-value {
+  font-family: var(--font-en); font-weight: 800;
+  font-size: clamp(2rem, 5vw, 2.6rem); line-height: 1.1;
+  color: var(--cyan-base);
+}
+.kpi-card.kpi-goal .kpi-value { color: var(--gold-base); }
+.kpi-label { font-size: .92rem; color: #FFFFFF; font-weight: 600; line-height: 1.6; }
+.kpi-note { font-size: .82rem; color: var(--space-vlight); }
+.kpi-disclaimer { margin-block-start: 20px; font-size: .85rem; color: var(--space-vlight); }
+
+/* ---------- 8. الخاتمة ---------- */
+.outro { text-align: center; background: radial-gradient(100% 100% at 50% 100%, var(--space-darkest), var(--space-base)); }
+.outro-line { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; max-width: 720px; margin-inline: auto; }
+.outro-slogan {
+  margin-block-start: 20px;
+  font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 800;
+  color: var(--gold-light);
+}
+footer {
+  border-block-start: 1px solid rgba(147,151,159,.15);
+  padding-block: 28px; text-align: center;
+  font-size: .88rem; color: var(--space-vlight);
+}
+footer .f-org { color: #FFFFFF; font-weight: 600; }
+footer a { color: var(--cyan-base); text-decoration: none; }
+footer .honesty {
+  margin-block-start: 12px; font-size: .78rem; color: var(--space-light);
+}
+
+/* ---------- حركة مخفّضة ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+  .starfield, .starfield::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 1. البطل ========== -->
+<header class="hero" id="hero">
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="container topbar">
+    <svg class="brand-logo" viewBox="0 0 418 200" role="img" aria-label="الأمد">
+      <g>
+        <path fill="#FFFFFF" d="M345.5,88.43c-5.17-.13-13.22-.94-19.11-7.13-6.79-7.13-6.92-15.38-7.58-21.77-.06-.58-.9-.58-.96,0-.66,6.4-.79,14.66-7.51,21.85-5.76,6.16-13.88,6.95-19.11,7.06-.58.01-.65.86-.07.96,5.82,1.02,12.9,2.34,19.19,9.06,5.35,5.71,6.95,13.19,7.54,18.79.06.57.89.57.96,0,.65-5.54,2.33-12.92,7.57-18.68,6.21-6.83,13.33-8.16,19.17-9.18.57-.1.51-.94-.07-.96ZM323.52,95.25c-5.05,5.55-4.96,11.02-5.2,13.77-.23-2.75,0-8.36-5.14-13.84-5.14-5.49-8.69-5.26-12.77-6.26,1.97-.26,7.63.77,12.77-4.73,5.14-5.5,4.28-9.56,5.14-13.83.86,4.27,0,8.33,5.19,13.78,5.25,5.51,10.74,4.52,12.72,4.78-4.08,1-7.65.77-12.71,6.33Z"></path>
+        <g>
+          <path fill="#FFFFFF" d="M295.04,146.03c-3.81,0-7.68-.68-11.34-2-4.79-1.73-9.23-4.57-12.85-8.23-3.14-3.17-5.88-7.43-7.72-12-2.11-5.24-2.97-10.68-2.49-15.75.39-4.08,1.62-7.91,3.68-11.38,2.26-3.82,5.51-7.2,9.66-10.05,2.09-1.44,5.24-2.94,8.58-4.53,5.19-2.48,11.07-5.28,14.09-8.32l.08-.08c3.48-3.17,5.62-7.36,7.89-11.8.74-1.45,1.5-2.94,2.32-4.39,1.42-2.69,2.85-4.68,4.37-6.1,3.18-2.98,6.2-2.89,8.17-2.28,5.23,1.62,7.44,5.63,9.78,9.88,1.8,3.27,3.84,6.99,7.67,10.73,4.15,4.07,7.93,6.16,11.28,8.02,4.31,2.39,8.03,4.45,9.39,9.55.53,1.96.54,4.96-2.36,8.09-1.42,1.53-3.39,2.95-6.05,4.36-1.45.81-2.95,1.58-4.39,2.32-4.44,2.27-8.63,4.41-11.8,7.89l-.08.08c-3.12,3.11-6.02,9.16-8.57,14.5-1.51,3.15-2.93,6.12-4.25,8.13-2.56,3.89-5.83,7.02-9.74,9.31-3.7,2.16-7.79,3.48-12.18,3.92-1.04.1-2.09.16-3.14.16ZM300.04,77.22c-3.62,3.61-9.87,6.59-15.4,9.23-3.16,1.51-6.15,2.93-7.92,4.15-6.79,4.67-10.58,10.69-11.27,17.91-.89,9.44,3.79,18.81,8.83,23.9,3.11,3.15,6.94,5.6,11.06,7.08,3.99,1.44,8.26,1.99,12.35,1.58,7.65-.76,14.17-4.69,18.36-11.07,1.14-1.74,2.49-4.57,3.93-7.56,2.71-5.67,5.78-12.09,9.48-15.8,3.76-4.1,8.52-6.54,13.13-8.89,1.42-.72,2.88-1.47,4.26-2.24l.05-.03c4.58-2.42,6.61-4.76,6.02-6.94-.8-2.99-2.86-4.24-7.07-6.57-3.43-1.9-7.7-4.27-12.32-8.79-4.33-4.25-6.65-8.46-8.52-11.85-2.37-4.3-3.75-6.6-6.97-7.59-2.08-.64-4.38,1.39-6.85,6.05l-.03.05c-.77,1.38-1.52,2.84-2.24,4.26-2.35,4.61-4.79,9.38-8.89,13.13Z"></path>
+          <path fill="#FFFFFF" d="M307.69,151.21c-2.49,0-4.98-.18-7.45-.55-4.83-.69-9.59-2.11-14.13-4.21-4.5-2.08-8.69-4.79-12.46-8.04l-.02-.02c-8.17-7.24-14.05-16.54-16.55-26.18-2.2-7.77-2.38-16.3-.52-24.67,1.4-6.25,4.09-12.41,7.77-17.83,3.75-5.51,8.55-10.29,13.9-13.81,7.33-4.91,15.97-7.84,24.97-8.49h.05c5.39-.28,10.79.27,16.06,1.62,5.22,1.34,10.21,3.45,14.81,6.26,5.46,3.27,10.45,7.75,14.42,12.98,3.94,5.18,6.91,11.12,8.62,17.18,2.46,8.46,2.62,17.64.47,26.54-1.59,7.04-4.72,13.67-9.06,19.17-3.19,4.4-7.21,8.23-11.97,11.39-4.57,3.04-9.59,5.31-14.92,6.76-4.64,1.26-9.32,1.9-13.97,1.9ZM276.82,134.77c3.42,2.95,7.23,5.41,11.32,7.3,4.12,1.9,8.43,3.19,12.8,3.82,6.42.95,12.97.53,19.45-1.23,4.83-1.31,9.38-3.37,13.52-6.12,4.29-2.85,7.9-6.29,10.75-10.24l.06-.08c3.91-4.95,6.74-10.93,8.17-17.29v-.04c1.97-8.1,1.83-16.43-.4-24.09v-.02c-1.55-5.49-4.25-10.87-7.82-15.57-3.61-4.75-8.13-8.81-13.06-11.77h-.02c-4.2-2.58-8.74-4.5-13.51-5.72-4.79-1.23-9.7-1.73-14.59-1.48-8.28.6-15.88,3.19-22.61,7.69h-.01c-4.82,3.19-9.17,7.51-12.56,12.51-3.34,4.92-5.78,10.51-7.05,16.17-1.68,7.59-1.52,15.31.46,22.32v.05c2.28,8.72,7.63,17.17,15.09,23.79Z"></path>
+          <path fill="#FFFFFF" d="M308.9,151.21c-.35,0-.69,0-1.04-.02l.16-4.83c9.08.3,17.07-3.78,21.94-11.19,1.14-1.74,2.49-4.57,3.93-7.56,2.71-5.67,5.78-12.09,9.48-15.8,3.41-3.72,7.72-6.11,11.83-8.23l2.21,4.3c-3.9,2.01-7.64,4.07-10.51,7.23l-.08.08c-3.12,3.11-6.02,9.16-8.57,14.5-1.51,3.15-2.93,6.12-4.25,8.13-2.97,4.52-6.88,7.99-11.62,10.32-4.1,2.01-8.74,3.07-13.47,3.07Z"></path>
+          <path fill="#FFFFFF" d="M262.2,84.76l-3.98-2.73c2.16-3.14,4.92-5.83,8.2-7.99,2.01-1.32,4.98-2.74,8.13-4.25,5.34-2.55,11.39-5.45,14.5-8.57l.09-.08c3.48-3.17,5.62-7.36,7.89-11.8l.08-.15,4.3,2.2-.08.15c-2.35,4.61-4.79,9.38-8.89,13.14-3.7,3.7-10.13,6.77-15.8,9.48-3,1.43-5.83,2.79-7.56,3.93-2.76,1.81-5.07,4.06-6.87,6.69Z"></path>
+          <path fill="#FFFFFF" d="M332.12,140.68c-3.92,0-7.44-1.15-10.64-3.46-4.72-3.41-8.16-8.85-11.81-14.61-3.31-5.23-6.72-10.63-11.31-14.85-2.77-2.54-6.79-4.84-11.04-7.28-4.24-2.43-8.63-4.94-12.24-7.96-4.34-3.63-6.86-7.46-7.71-11.71-1.27-6.36,1.22-13.47,7.61-21.73l.05-.06,1.56-1.89,3.73,3.07-1.53,1.86c-5.46,7.08-7.64,12.9-6.67,17.8,1.43,7.16,9.65,11.87,17.61,16.42,4.5,2.57,8.75,5.01,11.91,7.91,5.06,4.65,8.65,10.33,12.13,15.82,3.39,5.35,6.58,10.41,10.55,13.27,1.97,1.42,4.03,2.23,6.3,2.48,2.62.28,5.52-.18,8.88-1.39l1.65,4.54c-3.22,1.17-6.22,1.75-9.01,1.75Z"></path>
+          <path fill="#FFFFFF" d="M314.99,150.28c-6.44-2.97-10.59-9.53-14.98-16.47-3.31-5.23-6.72-10.63-11.31-14.85-2.81-2.59-7.03-4.93-11.49-7.42-9.53-5.3-20.33-11.31-20.96-22.18l4.82-.28c.48,8.22,9.63,13.31,18.49,18.24,4.72,2.63,9.17,5.11,12.41,8.08,5.06,4.65,8.65,10.33,12.13,15.82,4,6.32,7.78,12.3,12.92,14.67l-2.02,4.39Z"></path>
+          <path fill="#FFFFFF" d="M292.12,148.22c-.92-1.39-1.85-2.86-2.75-4.29-3.31-5.23-6.72-10.63-11.31-14.85-2.77-2.54-6.79-4.84-11.04-7.28-2.63-1.51-5.35-3.07-7.9-4.76l2.67-4.02c2.41,1.6,5.06,3.12,7.63,4.59,4.5,2.57,8.75,5.01,11.91,7.91,5.06,4.65,8.65,10.33,12.13,15.83.93,1.47,1.8,2.85,2.7,4.2l-4.03,2.67Z"></path>
+        </g>
+        <path fill="#F59E0B" d="M318.43,80.29c0,5.8,2.9,8.7,8.7,8.7-5.8,0-8.7,2.9-8.7,8.7,0-5.8-2.9-8.7-8.7-8.7,5.8,0,8.7-2.9,8.7-8.7Z"></path>
+      </g>
+      <g>
+        <path fill="#FFFFFF" d="M144.73,112.1c-7.97,0-14.41,2.25-18.56,4.51v22.56c0,3.98-1.86,4.62-7.09,4.62h-20.46c-3.5,0-5.24-1.07-5.24-3.87v-9.78c0-11.71-6.22-17.94-19.42-17.94-4.92,0-10.26,1.07-12.66,1.93v2.98c0,2.14,1.95,3.76,4.05,3.35,2.53-.5,5.57-.85,8.29-.85,8.18,0,11.79,3.76,11.79,11.17v8.38c0,3.98-1.64,4.62-6.99,4.62h-19.32v3.92c0,1.88,1.52,3.39,3.39,3.39h15.93c5.56,0,9.6-.53,12.12-2.69,1.96,1.83,4.8,2.69,8.08,2.69h20.46c5.56,0,9.6-.53,12.12-2.79,3.49,1.51,8.4,2.91,13.64,2.91h.66c12.77,0,18.66-6.34,18.66-17.63v-3.55c0-11.71-6.33-17.94-19.42-17.94ZM156.3,133.16c0,6.98-3.5,10.75-11.24,10.75h-.22c-5.13-.11-9.17-1.19-10.91-2.26v-19.88c1.2-.75,5.13-2.25,10.48-2.25,8.07,0,11.89,3.76,11.89,11.17v2.47Z"></path>
+        <path fill="#FFFFFF" d="M214.25,91.57v48.47c0,9.35-5.02,11.07-14.84,11.07h-29.25v-2.97c0-2.39,1.94-4.34,4.34-4.34h6.47v-35.06c0-1.56,1.07-2.92,2.58-3.3l5.27-1.3v35.14c0,2.04-.87,3.65-3.38,4.3l-.87.21h14.84c5.35,0,6.98-.64,6.98-4.62v-43.01c0-1.56,1.07-2.92,2.58-3.3l5.27-1.3ZM191.33,92.75v.04c0,1.87-1.52,3.39-3.39,3.39h-10.25v-.6c0-1.57,1.27-2.84,2.84-2.84h0c-.65-.86-.87-1.93-.87-3.44v-.21c0-4.93,3.32-6.8,7.47-6.5,1.76.13,3.12,1.62,3.12,3.38v.96c-3.93-1.93-6.66-.86-6.66,2.04v1.4c0,1.4.98,2.36,2.62,2.36h5.13Z"></path>
+        <path fill="#FFFFFF" d="M227.62,151.1v-54.94c0-1.56,1.07-2.92,2.58-3.3l5.27-1.3v56.14c0,1.87-1.52,3.39-3.39,3.39h-4.46Z"></path>
+      </g>
+    </svg>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
+  </div>
+  <div class="container hero-body">
+    <h1 class="hero-title" data-i18n="heroTitle"></h1>
+    <p class="hero-tagline" data-i18n="heroTagline"></p>
+    <p class="hero-def" data-i18n="companyDef"></p>
+    <p class="hero-slogan" data-i18n="investorSlogan"></p>
+    <div class="hero-cta">
+      <button class="btn-primary" id="ctaPipeline" data-i18n="ctaPipeline"></button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== 2. لوحة التجارب ========== -->
+<section id="board">
+  <div class="container">
+    <h2 class="section-title" data-i18n="boardTitle"></h2>
+    <p class="section-sub" data-i18n="boardSub"></p>
+    <div class="board-grid" id="boardGrid"></div>
+    <p class="board-hint" data-i18n="boardHint"></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ========== 3. خط الإنتاج ========== -->
+<section id="pipeline-section">
+  <div class="container">
+    <h2 class="section-title" data-i18n="pipelineTitle"></h2>
+    <p class="section-sub" data-i18n="pipelineSub"></p>
+    <div class="time-banner"><span class="dot" aria-hidden="true"></span><span data-i18n="timeBanner"></span></div>
+    <div class="pipeline" id="pipelineTrack"></div>
+    <p class="pipeline-note" data-i18n="pipelineNote"></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ========== 4. رحلة التجربة ========== -->
+<section id="journey">
+  <div class="container">
+    <h2 class="section-title" data-i18n="journeyTitle"></h2>
+    <p class="section-sub" data-i18n="journeySub"></p>
+    <div class="journey-head">
+      <div>
+        <div class="exp-code">SAFE-FIRE-01</div>
+        <div class="journey-title-line" data-i18n="journeyProjectName"></div>
+        <div class="exp-meta" data-i18n="journeyProjectMeta"></div>
+      </div>
+      <div class="journey-day" id="journeyDay"></div>
+      <div class="journey-controls">
+        <button class="btn-primary" id="btnStartTour" data-i18n="startTour"></button>
+        <button class="btn-ghost" id="btnResetTour" data-i18n="resetTour"></button>
+      </div>
+    </div>
+    <p class="mastery-rule" data-i18n="masteryRule"></p>
+    <div id="journeyPanel"></div>
+    <div class="audit-log">
+      <h3 data-i18n="auditTitle"></h3>
+      <ul id="auditList"></ul>
+      <p class="audit-empty" id="auditEmpty" data-i18n="auditEmpty"></p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ========== 5. عمق المخرجات ========== -->
+<section id="artifacts">
+  <div class="container">
+    <h2 class="section-title" data-i18n="artTitle"></h2>
+    <p class="section-sub" data-i18n="artSub"></p>
+    <div class="artifact-panels">
+
+      <details>
+        <summary><span class="p-tag">KP-2-1</span><span data-i18n="artA_title"></span><span class="chev" aria-hidden="true">▾</span></summary>
+        <div class="artifact-body">
+          <div class="kp-card">
+            <div class="kp-row"><span class="kp-label" data-i18n="artA_codeL"></span><span class="kp-value">KP-2-1</span></div>
+            <div class="kp-row"><span class="kp-label" data-i18n="artA_channelL"></span><span class="kp-value" data-i18n="artA_channelV"></span></div>
+            <div class="kp-row"><span class="kp-label" data-i18n="artA_textL"></span></div>
+            <p class="kp-verbatim" data-i18n="artA_textV"></p>
+            <div class="kp-row"><span class="kp-label" data-i18n="artA_loL"></span><span class="kp-value">LO-1</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="p-tag">8-B</span><span data-i18n="artB_title"></span><span class="chev" aria-hidden="true">▾</span></summary>
+        <div class="artifact-body">
+          <div class="q-card">
+            <p class="q-text" data-i18n="artB_q"></p>
+            <ul class="q-options">
+              <li><span data-i18n="artB_optA"></span><span class="q-fb" data-i18n="artB_fbA"></span></li>
+              <li class="correct"><span data-i18n="artB_optB"></span><span class="q-fb" data-i18n="artB_fbB"></span></li>
+              <li><span data-i18n="artB_optC"></span><span class="q-fb" data-i18n="artB_fbC"></span></li>
+              <li><span data-i18n="artB_optD"></span><span class="q-fb" data-i18n="artB_fbD"></span></li>
+            </ul>
+            <p class="q-tag" data-i18n="artB_tag"></p>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="p-tag" data-i18n="artC_tag"></span><span data-i18n="artC_title"></span><span class="chev" aria-hidden="true">▾</span></summary>
+        <div class="artifact-body">
+          <div class="valve-compare">
+            <div class="valve-box">
+              <p class="valve-excerpt" data-i18n-html="artC_ex1"></p>
+              <button class="btn-secondary valve-check" data-valve="1" data-i18n="artC_check"></button>
+              <p class="valve-result reject" id="valveResult1" data-i18n="artC_reject" role="status"></p>
+            </div>
+            <div class="valve-box">
+              <p class="valve-excerpt" data-i18n-html="artC_ex2"></p>
+              <button class="btn-secondary valve-check" data-valve="2" data-i18n="artC_check"></button>
+              <p class="valve-result pass" id="valveResult2" data-i18n="artC_pass" role="status"></p>
+            </div>
+          </div>
+          <p class="valve-note" data-i18n="artC_note"></p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ========== 6. الاختبار الصارم ========== -->
+<section id="tests">
+  <div class="container">
+    <h2 class="section-title" data-i18n="testsTitle"></h2>
+    <p class="section-sub" data-i18n="testsSub"></p>
+    <div class="tests-head">
+      <button class="btn-primary" id="btnRunTests" data-i18n="runTests"></button>
+      <div class="tests-counter" id="testsCounter">0/11</div>
+    </div>
+    <div class="tests-grid" id="testsGrid"></div>
+    <p class="tests-final" data-i18n-html="testsFinal"></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ========== 7. داشبورد المؤشرات ========== -->
+<section id="kpis">
+  <div class="container">
+    <h2 class="section-title" data-i18n="kpiTitle"></h2>
+    <p class="section-sub" data-i18n="kpiSub"></p>
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <p class="kpi-disclaimer" data-i18n="kpiDisclaimer"></p>
+  </div>
+</section>
+
+<!-- ========== 8. الخاتمة والتذييل ========== -->
+<section class="outro">
+  <div class="container">
+    <p class="outro-line" data-i18n="outroLine"></p>
+    <p class="outro-slogan" data-i18n="outroSlogan"></p>
+  </div>
+</section>
+<footer>
+  <div class="container">
+    <p><span class="f-org" data-i18n="footerOrg"></span> | <a href="mailto:tariq@al-amad.com.sa">tariq@al-amad.com.sa</a> | <a href="https://www.al-amad.com.sa">www.al-amad.com.sa</a></p>
+    <p class="honesty">نموذج أولي تفاعلي — بيانات عرض توضيحية | Interactive prototype — demonstration data</p>
+  </div>
+</footer>
+<script>
+'use strict';
+
+/* قاموس النصوص — الطبقتان كاملتان، لا نصوص معلّقة خارجه */
+const I18N = {
+  ar: {
+    langToggle: 'EN',
+    heroTitle: 'نظام ناسج الذكي',
+    heroTagline: 'خط إنتاج الأمد — من تحليل الاحتياج إلى التجربة الجاهزة في 7 أيام',
+    companyDef: 'الأمد شركة سعودية تبني تجارب محاكاة غامرة بالواقع الممتد، يمارس فيها الإنسان المهارات الحرجة كأنه في الواقع، ويخرج منها بإتقانٍ مُثبَت بالبيانات.',
+    investorSlogan: '«نُحاكي ما يستحيل محاكاته. ونقيس ما لا يُقاس.»',
+    ctaPipeline: 'استعرض خط الإنتاج',
+
+    boardTitle: 'لوحة التجارب',
+    boardSub: 'نبض الخط كاملاً — تجارب توضيحية موزعة على المراحل الست وبوابات الاعتماد.',
+    boardHint: 'اضغط بطاقة SAFE-FIRE-01 لمتابعة رحلتها كاملة في قسم رحلة التجربة — بقية البطاقات للعرض.',
+    dayOf: 'اليوم {n} من 7',
+    stageOf: 'المرحلة {n}',
+    stComplete: 'مكتملة — 7 من 7',
+    gateApproved: 'معتمدة',
+    gateAwaiting: 'بانتظار اعتماد {role}',
+    sectorLabel: 'القطاع:',
+    deviceLabel: 'الجهاز:',
+    expFire: 'إتقان استخدام طفاية الحريق',
+    expMoon: 'رحلة إلى القمر',
+    expChem: 'التركيب الذري',
+    expHrct: 'التدريب الشعاعي',
+    expBtrfly: 'رحلة الفراشة',
+    secIndustrial: 'الصناعي والتقني-المهني',
+    secEdu: 'التعليم العام',
+    secHealth: 'الصحي',
+    secEarly: 'التعليم المبكر',
+
+    pipelineTitle: 'خط الإنتاج',
+    pipelineSub: 'قلب منظومة محاكاة احترافية متكاملة: ست مراحل تفصل بينها ست بوابات اعتماد بشري.',
+    timeBanner: 'الغلاف الزمني: 7 أيام من التحليل حتى التجربة',
+    pipelineNote: 'كل بوابة موسومة بدور معتمدها: خبير للبوابات 1 و2 و3 و5، مطور 3D للبوابة 4، مطور XR للبوابة 6. حالات البوابات هنا تتبع رحلة التجربة أدناه.',
+    stages: ['تحليل الاحتياج', 'المنهج المرجعي', 'السيناريو (قالب v26)', 'العناصر ثلاثية الأبعاد', 'التعليق الصوتي', 'تطوير التجربة WebXR'],
+    stageNum: 'المرحلة {n}',
+    gateTitle: 'بوابة اعتماد بشري',
+    roleExpert: 'خبير',
+    role3D: 'مطور 3D',
+    roleXR: 'مطور XR',
+    approverExpert: 'الخبير',
+    approver3D: 'مطور 3D',
+    approverXR: 'مطور XR',
+    gLocked: 'مقفلة',
+    gPending: 'بانتظار الاعتماد',
+    gApproved: 'معتمدة',
+
+    journeyTitle: 'رحلة التجربة',
+    journeySub: 'مشروع توضيحي واحد يمر بالخط أمام المشاهد — ابدأ الجولة وقرر الاعتماد بنفسك عند كل بوابة.',
+    journeyProjectName: 'إتقان استخدام طفاية الحريق',
+    journeyProjectMeta: 'القطاع: الصناعي والتقني-المهني | الجهاز: Meta Quest 3',
+    startTour: 'ابدأ الجولة',
+    resetTour: 'إعادة الضبط',
+    masteryRule: 'قاعدة صارمة: لا تُفتح مرحلة قبل اعتماد سابقتها — هذا مبدأ بوابة الإتقان مترجماً إدارياً.',
+    agentStrip: 'شريط نشاط الوكيل',
+    checkValve: 'صمام التحقق الآلي',
+    awaitingHuman: 'بانتظار الاعتماد البشري',
+    approverCard: 'بطاقة المعتمِد',
+    approve: 'اعتماد',
+    returnNotes: 'إعادة مع ملاحظات',
+    returnProcessing: 'معالجة الملاحظات وتحديث المخرج…',
+    journeyDone: 'اعتُمدت البوابات الست — التجربة جاهزة للتسليم في اليوم 7 من 7.',
+    auditTitle: 'سجل التدقيق',
+    auditEmpty: 'لا قرارات بعد — ابدأ الجولة لتسجيل قرارات الاعتماد.',
+    auditApprove: 'اعتماد مرحلة «{stage}»',
+    auditReturn: 'إعادة مع ملاحظات — مرحلة «{stage}»',
+    timeNote: 'توقيت توضيحي',
+    agentLines: [
+      ['قراءة موجز الاحتياج من العميل…', 'تحليل فجوة المهارة للفئة المستهدفة…', 'تحديد القطاع والجهاز المستهدف…', 'صياغة الأهداف التعليمية LO-1 إلى LO-4…', 'جاهز للتحقق الآلي'],
+      ['جمع المصادر المرجعية المعتمدة…', 'مواءمة المحتوى مع الأهداف التعليمية…', 'بناء خريطة المفاهيم للمشاهد…', 'توثيق المراجع في السجل…', 'جاهز للتحقق الآلي'],
+      ['قراءة المنهج المرجعي المعتمد…', 'بناء المشهد 2 من 5…', 'كتابة KP-2-1 بالنص الحرفي…', 'توليد بنك أسئلة 8-ب…', 'فحص قاعدة الاتساق…', 'جاهز للتحقق الآلي'],
+      ['قراءة قائمة الأصول من السيناريو المعتمد…', 'نمذجة طفاية الحريق وبيئة الورشة…', 'ضبط المقاييس والخامات…', 'تحسين الأداء نحو 70+ إطاراً/ثانية…', 'جاهز للتحقق البصري'],
+      ['قراءة السكربت الصوتي للمشهد 2…', 'توليد التعليق العربي ثم الإنجليزي…', 'فحص التغطية سطراً بسطر…', 'جاهز للتحقق السمعي'],
+      ['تجميع المشاهد الخمسة في التجربة…', 'ربط طبقة xAPI بمؤشرات الإتقان…', 'تفعيل بوابة الإتقان بين المشاهد…', 'فحص الأداء على الجهاز المستهدف…', 'جاهز للاختبار الصارم']
+    ],
+    stageChecks: [
+      ['اكتمال ملف الاحتياج', 'وضوح الأهداف التعليمية', 'تحديد شرط الإتمام'],
+      ['تغطية الأهداف كاملة', 'توثيق المصادر', 'خلو المحتوى من التعارض'],
+      ['اكتمال المكونات الثمانية لكل مشهد', 'لا قيم نائبة في النص الحرفي', 'قاعدة الاتساق: لا يُقاس ما لم يُقدَّم'],
+      ['مطابقة الأصول لقائمة السيناريو', 'صحة المقاييس والخامات', 'ضمن ميزانية الأداء'],
+      ['تغطية السكربت سطراً بسطر', 'تطابق النطق مع النص الحرفي', 'جاهزية الملفات باللغتين'],
+      ['اجتياز نقاط التحقق الإحدى عشرة', 'ثبات الأداء 70+ إطاراً/ثانية', 'اكتمال تقرير tests-report.md']
+    ],
+
+    artTitle: 'عمق المخرجات',
+    artSub: 'ثلاث لوحات تُظهر جدية معيار v26 — كل ما يلي بيانات توضيحية.',
+    artA_title: 'نقطة معرفة (المكوّن 2)',
+    artA_codeL: 'الكود:',
+    artA_channelL: 'القناة:',
+    artA_channelV: 'لوحة نصية + تعليق صوتي',
+    artA_textL: 'النص الحرفي:',
+    artA_textV: '«يقوم الاحتراق على ثلاثة عناصر متلازمة: الحرارة، والوقود، والأكسجين. إزالة أي عنصر منها توقف الاحتراق، وهذا هو الأساس العلمي لعمل جميع أنواع الطفايات.»',
+    artA_loL: 'الهدف المرتبط:',
+    artB_title: 'سؤال من بنك 8-ب',
+    artB_q: 'عند استخدام طفاية الحريق وفق أسلوب PASS، ما الخطوة الأولى الصحيحة؟',
+    artB_optA: 'أ) توجيه الخرطوم إلى قاعدة اللهب',
+    artB_optB: 'ب) سحب مسمار الأمان — الإجابة الصحيحة',
+    artB_optC: 'ج) الضغط على المقبض',
+    artB_optD: 'د) المسح الجانبي على قاعدة الحريق',
+    artB_fbA: 'التوجيه خطوة تالية — الطفاية لا تعمل ومسمار الأمان في مكانه.',
+    artB_fbB: 'المبرر: لا يمكن تشغيل آلية الطفاية قبل تحرير مسمار الأمان؛ فهو قفل التشغيل.',
+    artB_fbC: 'الضغط قبل سحب المسمار لا يُخرج مادة الإطفاء.',
+    artB_fbD: 'المسح هو الخطوة الأخيرة في التسلسل.',
+    artB_tag: 'يستند إلى KP-2-1 — قاعدة الاتساق: لا يُقاس ما لم يُقدَّم',
+    artC_tag: 'v26',
+    artC_title: 'صمام رفض القيم النائبة',
+    artC_ex1: 'المشهد 2 — المكوّن 2: <em>«يُعرض المحتوى المعرفي للمشهد هنا»</em>',
+    artC_ex2: 'المشهد 2 — المكوّن 2: <em>«يقوم الاحتراق على ثلاثة عناصر متلازمة: الحرارة، والوقود، والأكسجين…»</em>',
+    artC_check: 'فحص المقطع',
+    artC_reject: 'إعادة إلى ناسج — قيمة نائبة في المكوّن 2: النص الحرفي مفقود',
+    artC_pass: 'مطابق لقالب v26',
+    artC_note: 'هذا الصمام يوضح لماذا لا يستطيع النظام «اختلاق» محتوى: القيمة النائبة تُرفض آلياً قبل وصولها إلى المراجع البشري.',
+
+    testsTitle: 'الاختبار الصارم',
+    testsSub: '11 نقطة تحقق تجتازها كل تجربة قبل التسليم.',
+    runTests: 'تشغيل الفحص',
+    testItems: ['اكتمال السيناريو', 'مطابقة الأصول', 'القاموس اللغوي وRTL', 'مدير المشاهد وبوابة الإتقان', 'طبقة xAPI', 'شرط الإتمام', 'التفاعلات', 'أمانة المحتوى', 'الرحلة الكاملة', 'الأداء 70+ إطاراً/ثانية', 'إمكانية الوصول'],
+    testsFinal: 'كل تجربة تُسلَّم مع تقرير اختبارات ثنائي اللغة — <code>tests-report.md</code>',
+
+    kpiTitle: 'داشبورد المؤشرات',
+    kpiSub: 'مؤشرات خط الإنتاج — أرقام توضيحية تتصاعد عند دخولها مجال الرؤية.',
+    kpiUnits: ['أيام', '%', '%', 'دقيقة'],
+    kpiLabels: ['زمن الدورة من التحليل حتى التجربة', 'الاجتياز من أول مرة عبر البوابات الست', 'رفض آلي للقيم النائبة قبل وصولها للمراجع', 'متوسط مدة التجربة ضمن حد 42 دقيقة'],
+    kpiDisclaimer: 'أرقام توضيحية لأغراض العرض.',
+
+    outroLine: 'خط إنتاج يقيس نفسه بالمنهجية التي يَعِد بها عملاءه.',
+    outroSlogan: 'حيث تُلمس الأفكار',
+    footerOrg: 'شركة الأمد التقنية — مكة المكرمة'
+  },
+  en: {
+    langToggle: 'ع',
+    heroTitle: 'Nasej Intelligent System',
+    heroTagline: "Al-Amad's production line — from needs analysis to a ready experience in 7 days",
+    companyDef: 'Al-Amad is a Saudi company that builds immersive extended-reality (XR) simulation experiences in which people practice critical skills as if in the real world — and come out with mastery proven by data.',
+    investorSlogan: '"We simulate the unsimulatable. We measure the unmeasurable."',
+    ctaPipeline: 'Explore the production line',
+
+    boardTitle: 'Experiences Board',
+    boardSub: 'The full pulse of the line — demonstration experiences across the six stages and approval gates.',
+    boardHint: 'Tap the SAFE-FIRE-01 card to follow its full journey in the Experience Journey section — the other cards are display-only.',
+    dayOf: 'Day {n} of 7',
+    stageOf: 'Stage {n}',
+    stComplete: 'Completed — 7 of 7',
+    gateApproved: 'Approved',
+    gateAwaiting: 'Awaiting {role} approval',
+    sectorLabel: 'Sector:',
+    deviceLabel: 'Device:',
+    expFire: 'Fire Extinguisher Mastery',
+    expMoon: 'Journey to the Moon',
+    expChem: 'Atomic Structure',
+    expHrct: 'Radiology Training',
+    expBtrfly: 'The Butterfly Journey',
+    secIndustrial: 'Industrial & Technical-Vocational',
+    secEdu: 'General Education',
+    secHealth: 'Healthcare',
+    secEarly: 'Early Education',
+
+    pipelineTitle: 'The Production Line',
+    pipelineSub: 'The heart of an integrated professional simulation ecosystem: six stages separated by six human approval gates.',
+    timeBanner: 'Time envelope: 7 days from analysis to experience',
+    pipelineNote: 'Each gate is labeled with its approver role: Expert for gates 1, 2, 3 and 5, 3D Developer for gate 4, XR Developer for gate 6. Gate states here follow the Experience Journey below.',
+    stages: ['Needs Analysis', 'Reference Curriculum', 'Scenario (v26 Template)', '3D Elements', 'Voice-over', 'WebXR Experience Development'],
+    stageNum: 'Stage {n}',
+    gateTitle: 'Human approval gate',
+    roleExpert: 'Expert',
+    role3D: '3D Developer',
+    roleXR: 'XR Developer',
+    approverExpert: 'Expert',
+    approver3D: '3D Developer',
+    approverXR: 'XR Developer',
+    gLocked: 'Locked',
+    gPending: 'Awaiting approval',
+    gApproved: 'Approved',
+
+    journeyTitle: 'Experience Journey',
+    journeySub: 'One demonstration project moves through the line before your eyes — start the tour and make each approval decision yourself.',
+    journeyProjectName: 'Fire Extinguisher Mastery',
+    journeyProjectMeta: 'Sector: Industrial & Technical-Vocational | Device: Meta Quest 3',
+    startTour: 'Start the tour',
+    resetTour: 'Reset',
+    masteryRule: 'Strict rule: no stage opens before its predecessor is approved — the mastery-gate principle, translated into management.',
+    agentStrip: 'Agent activity strip',
+    checkValve: 'Automated verification valve',
+    awaitingHuman: 'Awaiting human approval',
+    approverCard: 'Approver card',
+    approve: 'Approve',
+    returnNotes: 'Return with notes',
+    returnProcessing: 'Processing the notes and updating the deliverable…',
+    journeyDone: 'All six gates approved — the experience is ready for delivery on day 7 of 7.',
+    auditTitle: 'Audit log',
+    auditEmpty: 'No decisions yet — start the tour to record approval decisions.',
+    auditApprove: 'Approved stage "{stage}"',
+    auditReturn: 'Returned with notes — stage "{stage}"',
+    timeNote: 'illustrative time',
+    agentLines: [
+      ['Reading the client needs brief…', 'Analyzing the skill gap for the target audience…', 'Defining the sector and target device…', 'Drafting learning objectives LO-1 to LO-4…', 'Ready for automated verification'],
+      ['Collecting approved reference sources…', 'Aligning content with the learning objectives…', 'Building the concept map for the scenes…', 'Documenting references in the record…', 'Ready for automated verification'],
+      ['Reading the approved reference curriculum…', 'Building scene 2 of 5…', 'Writing KP-2-1 with verbatim text…', 'Generating question bank 8-B…', 'Running the consistency-rule check…', 'Ready for automated verification'],
+      ['Reading the asset list from the approved scenario…', 'Modeling the extinguisher and the workshop environment…', 'Calibrating scale and materials…', 'Optimizing performance toward 70+ FPS…', 'Ready for visual verification'],
+      ['Reading the audio script for scene 2…', 'Generating the Arabic then the English voice-over…', 'Checking coverage line by line…', 'Ready for audio verification'],
+      ['Assembling the five scenes into the experience…', 'Wiring the xAPI layer to mastery indicators…', 'Enabling the mastery gate between scenes…', 'Profiling performance on the target device…', 'Ready for rigorous testing']
+    ],
+    stageChecks: [
+      ['Needs file completeness', 'Clear learning objectives', 'Completion criterion defined'],
+      ['Full objective coverage', 'Sources documented', 'Content free of contradictions'],
+      ['All eight components complete per scene', 'No placeholders in verbatim text', 'Consistency rule: nothing assessed unless taught'],
+      ['Assets match the scenario list', 'Scale and materials verified', 'Within the performance budget'],
+      ['Script covered line by line', 'Narration matches the verbatim text', 'Files ready in both languages'],
+      ['All 11 checkpoints passed', 'Stable 70+ FPS performance', 'tests-report.md complete']
+    ],
+
+    artTitle: 'Artifact Depth',
+    artSub: 'Three panels that show the rigor of the v26 standard — everything below is demonstration data.',
+    artA_title: 'Knowledge Point (Component 2)',
+    artA_codeL: 'Code:',
+    artA_channelL: 'Channel:',
+    artA_channelV: 'Text panel + voice-over',
+    artA_textL: 'Verbatim text:',
+    artA_textV: '"Combustion rests on three inseparable elements: heat, fuel, and oxygen. Removing any one of them stops the combustion — and this is the scientific basis for how all types of extinguishers work."',
+    artA_loL: 'Linked objective:',
+    artB_title: 'A question from bank 8-B',
+    artB_q: 'When using a fire extinguisher with the PASS method, what is the correct first step?',
+    artB_optA: 'A) Aim the hose at the base of the flames',
+    artB_optB: 'B) Pull the safety pin — correct answer',
+    artB_optC: 'C) Squeeze the handle',
+    artB_optD: 'D) Sweep side to side across the base of the fire',
+    artB_fbA: 'Aiming is a later step — the extinguisher will not operate while the safety pin is in place.',
+    artB_fbB: 'Rationale: the extinguisher mechanism cannot operate before the safety pin is released; it is the operating lock.',
+    artB_fbC: 'Squeezing before pulling the pin releases no extinguishing agent.',
+    artB_fbD: 'Sweeping is the final step in the sequence.',
+    artB_tag: 'Based on KP-2-1 — consistency rule: nothing is assessed unless it was taught',
+    artC_tag: 'v26',
+    artC_title: 'Placeholder Rejection Valve',
+    artC_ex1: 'Scene 2 — Component 2: <em>"The scene’s knowledge content is displayed here"</em>',
+    artC_ex2: 'Scene 2 — Component 2: <em>"Combustion rests on three inseparable elements: heat, fuel, and oxygen…"</em>',
+    artC_check: 'Check excerpt',
+    artC_reject: 'Returned to Nasej — placeholder in Component 2: verbatim text missing',
+    artC_pass: 'Conforms to template v26',
+    artC_note: 'This valve shows why the system cannot "fabricate" content: a placeholder is rejected automatically before it ever reaches the human reviewer.',
+
+    testsTitle: 'Rigorous Testing',
+    testsSub: '11 checkpoints every experience passes before delivery.',
+    runTests: 'Run checks',
+    testItems: ['Scenario completeness', 'Asset conformance', 'Language dictionary & RTL', 'Scene manager & mastery gate', 'xAPI layer', 'Completion criterion', 'Interactions', 'Content fidelity', 'Full journey', 'Performance 70+ FPS', 'Accessibility'],
+    testsFinal: 'Every experience ships with a bilingual test report — <code>tests-report.md</code>',
+
+    kpiTitle: 'KPI Dashboard',
+    kpiSub: 'Production-line indicators — illustrative figures that count up as they enter the viewport.',
+    kpiUnits: ['days', '%', '%', 'min'],
+    kpiLabels: ['Cycle time from analysis to experience', 'First-pass approval across the six gates', 'Automatic placeholder rejection before reaching the reviewer', 'Average experience duration within the 42-minute limit'],
+    kpiDisclaimer: 'Illustrative figures for demonstration purposes.',
+
+    outroLine: 'A production line that measures itself by the very methodology it promises its clients.',
+    outroSlogan: 'Where Ideas Become Tangible',
+    footerOrg: 'Al-Amad Technology — Makkah'
+  }
+};
+
+// بيانات عرض توضيحية — Demonstration data only
+const DEMO_DATA = {
+  experiences: [
+    { code: 'SAFE-FIRE-01',   nameKey: 'expFire',   sectorKey: 'secIndustrial', device: 'Meta Quest 3', done: 6, active: 0, day: 7, status: 'complete', clickable: true },
+    { code: 'MOON-JOURNEY-06', nameKey: 'expMoon',  sectorKey: 'secEdu',        device: 'Meta Quest 3', done: 6, active: 0, day: 7, status: 'complete' },
+    { code: 'CHEM-ATOM-09',   nameKey: 'expChem',   sectorKey: 'secEdu',        device: 'Meta Quest 3', done: 5, active: 6, day: 6, status: 'approved' },
+    { code: 'HRCT-01',        nameKey: 'expHrct',   sectorKey: 'secHealth',     device: 'Meta Quest 3', done: 2, active: 3, day: 3, status: 'awaiting', roleKey: 'approverExpert' },
+    { code: 'BTRFLY-01',      nameKey: 'expBtrfly', sectorKey: 'secEarly',      device: 'Meta Quest 3', done: 3, active: 4, day: 4, status: 'approved' }
+  ],
+  gateRoles: ['roleExpert', 'roleExpert', 'roleExpert', 'role3D', 'roleExpert', 'roleXR'],
+  approverRoles: ['approverExpert', 'approverExpert', 'approverExpert', 'approver3D', 'approverExpert', 'approverXR'],
+  gateDates: ['12/07', '13/07', '14/07', '15/07', '16/07', '17/07'],
+  auditTimes: ['09:20', '10:45', '11:30', '13:15', '14:40', '16:05', '16:50', '17:25'],
+  kpis: [
+    { value: 7,   goal: false },
+    { value: 78,  goal: false },
+    { value: 100, goal: true },
+    { value: 35,  goal: true }
+  ]
+};
+
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C12 8 15 11 22 12 15 13 12 16 12 22 12 16 9 13 2 12 9 11 12 8 12 2Z"/></svg>';
+
+/* الحالة في الذاكرة فقط — لا تخزين محلي */
+const state = {
+  lang: 'ar',
+  tourStarted: false,
+  stage: 0,          // فهرس المرحلة الحالية 0..5
+  phase: 'idle',     // idle | agent | checks | awaiting | done
+  lineIdx: 0,        // أسطر الوكيل المكتملة
+  checkIdx: 0,       // الفحوص المكتملة
+  returning: false,  // جولة إعادة مع ملاحظات
+  day: 1,
+  approvedGates: [false, false, false, false, false, false],
+  audit: [],         // {roleKey, action, stageIdx, time}
+  timers: new Set(),
+  testsCount: 0,
+  testsRunning: false,
+  kpiShown: false
+};
+
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const t = (k) => I18N[state.lang][k];
+const fmt = (str, map) => str.replace(/\{(\w+)\}/g, (m, k) => (map[k] !== undefined ? map[k] : m));
+const RM = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function later(fn, ms) {
+  const id = setTimeout(() => { state.timers.delete(id); fn(); }, ms);
+  state.timers.add(id);
+  return id;
+}
+function clearTimers() {
+  state.timers.forEach(clearTimeout);
+  state.timers.clear();
+}
+
+/* ---------- اللغة ---------- */
+function applyLang() {
+  const d = I18N[state.lang];
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = state.lang === 'ar' ? 'نظام ناسج الذكي — الأمد' : 'Nasej Intelligent System — Al-Amad';
+  $$('[data-i18n]').forEach(el => { el.textContent = d[el.dataset.i18n]; });
+  $$('[data-i18n-html]').forEach(el => { el.innerHTML = d[el.dataset.i18nHtml]; });
+  $('#langToggle').textContent = d.langToggle;
+  renderBoard();
+  renderPipeline();
+  renderJourneyDay();
+  renderAudit();
+  renderTests(true);
+  renderKpis();
+  renderJourney(true);
+}
+
+/* ---------- 2. لوحة التجارب ---------- */
+function renderBoard() {
+  const grid = $('#boardGrid');
+  grid.innerHTML = '';
+  DEMO_DATA.experiences.forEach(exp => {
+    const el = document.createElement(exp.clickable ? 'button' : 'article');
+    el.className = 'exp-card' + (exp.clickable ? ' clickable' : '');
+    let bars = '';
+    for (let i = 1; i <= 6; i++) {
+      bars += `<span class="${i <= exp.done ? 'done' : (i === exp.active ? 'active' : '')}"></span>`;
+    }
+    let badge;
+    if (exp.status === 'complete') badge = `<span class="badge badge-gold">${t('stComplete')}</span>`;
+    else if (exp.status === 'awaiting') badge = `<span class="badge badge-purple">${fmt(t('gateAwaiting'), { role: t(exp.roleKey) })}</span>`;
+    else badge = `<span class="badge badge-gold">${t('gateApproved')}</span>`;
+    const stageInfo = exp.status === 'complete' ? '' : ` | ${fmt(t('stageOf'), { n: exp.active })}`;
+    el.innerHTML =
+      `<div class="exp-code">${exp.code}</div>` +
+      `<div class="exp-name">${t(exp.nameKey)}</div>` +
+      `<div class="exp-meta">${t('sectorLabel')} ${t(exp.sectorKey)} | ${t('deviceLabel')} ${exp.device}${stageInfo}</div>` +
+      `<div class="mini-progress" aria-hidden="true">${bars}</div>` +
+      `<div class="exp-status">${badge}<span class="day-counter">${fmt(t('dayOf'), { n: `<b>${exp.day}</b>` })}</span></div>`;
+    if (exp.clickable) {
+      el.addEventListener('click', () => $('#journey').scrollIntoView({ behavior: RM() ? 'auto' : 'smooth' }));
+    }
+    grid.appendChild(el);
+  });
+}
+
+/* ---------- 3. خط الإنتاج ---------- */
+function gateState(i) {
+  if (state.approvedGates[i]) return 'approved';
+  if (state.tourStarted && i === state.stage && state.phase === 'awaiting') return 'pending';
+  return 'locked';
+}
+function renderPipeline() {
+  const track = $('#pipelineTrack');
+  track.innerHTML = '';
+  t('stages').forEach((name, i) => {
+    const card = document.createElement('div');
+    let cls = 'stage-card';
+    if (state.approvedGates[i]) cls += ' st-done';
+    else if (state.tourStarted && i === state.stage) cls += ' st-active';
+    else if (state.tourStarted && i > state.stage) cls += ' st-locked';
+    card.className = cls;
+    card.innerHTML = `<div class="stage-num">${fmt(t('stageNum'), { n: i + 1 })}</div><div class="stage-name">${name}</div>`;
+    track.appendChild(card);
+
+    const g = gateState(i);
+    const gate = document.createElement('div');
+    gate.className = `gate g-${g}`;
+    const stateText = g === 'approved'
+      ? `${t('gApproved')} · ${DEMO_DATA.gateDates[i]}`
+      : (g === 'pending' ? t('gPending') : t('gLocked'));
+    gate.innerHTML =
+      `<div class="gate-star" role="img" aria-label="${t('gateTitle')}">${STAR}</div>` +
+      `<div class="gate-role">${t(DEMO_DATA.gateRoles[i])}</div>` +
+      `<div class="gate-state">${stateText}</div>`;
+    track.appendChild(gate);
+  });
+}
+
+/* ---------- 4. رحلة التجربة ---------- */
+function renderJourneyDay() {
+  $('#journeyDay').innerHTML = fmt(t('dayOf'), { n: `<b>${state.day}</b>` });
+}
+function renderAudit() {
+  const list = $('#auditList');
+  list.innerHTML = '';
+  $('#auditEmpty').style.display = state.audit.length ? 'none' : 'block';
+  state.audit.forEach(en => {
+    const li = document.createElement('li');
+    if (en.action === 'return') li.className = 'a-return';
+    const tpl = en.action === 'approve' ? t('auditApprove') : t('auditReturn');
+    li.innerHTML =
+      `<span class="a-role">${t(en.roleKey)}</span>` +
+      `<span>${fmt(tpl, { stage: t('stages')[en.stageIdx] })}</span>` +
+      `<span class="a-time">${en.time} · ${t('timeNote')}</span>`;
+    list.appendChild(li);
+  });
+}
+
+function renderJourney(resume) {
+  clearTimers();
+  const panel = $('#journeyPanel');
+  if (!state.tourStarted) { panel.innerHTML = ''; return; }
+  if (state.phase === 'done') {
+    panel.innerHTML = `<div class="journey-done">${t('journeyDone')}</div>`;
+    return;
+  }
+  const i = state.stage;
+  panel.innerHTML =
+    `<div class="journey-stage-panel">` +
+      `<div class="journey-stage-head">` +
+        `<span class="exp-code">${fmt(t('stageNum'), { n: i + 1 })} / 6</span>` +
+        `<span class="journey-stage-name">${t('stages')[i]}</span>` +
+        `<span class="badge badge-purple" id="jStatus" hidden>${t('awaitingHuman')}</span>` +
+      `</div>` +
+      `<div class="agent-strip">` +
+        `<div class="agent-strip-title"><span class="dot" aria-hidden="true"></span><span>${t('agentStrip')}</span></div>` +
+        `<div id="agentLines" aria-live="polite"></div>` +
+      `</div>` +
+      `<div class="check-valve" id="checkValve" hidden>` +
+        `<div class="check-valve-title">${t('checkValve')}</div>` +
+        `<ul class="check-list" id="checkList"></ul>` +
+      `</div>` +
+      `<div class="approver-card" id="approverCard" hidden>` +
+        `<div><div class="approver-role">${t(DEMO_DATA.approverRoles[i])}</div>` +
+        `<div class="approver-sub">${t('approverCard')} — ${t('awaitingHuman')}</div></div>` +
+        `<div class="approver-actions">` +
+          `<button class="btn-gold" data-act="approve">${t('approve')}</button>` +
+          `<button class="btn-secondary" data-act="return">${t('returnNotes')}</button>` +
+        `</div>` +
+      `</div>` +
+    `</div>`;
+
+  const lines = state.returning ? [t('returnProcessing')] : t('agentLines')[i];
+  const linesBox = $('#agentLines');
+  // الأسطر المكتملة تظهر فوراً عند استئناف العرض (تبديل لغة مثلاً)
+  const doneCount = resume ? Math.min(state.lineIdx, lines.length) : state.lineIdx;
+  for (let n = 0; n < doneCount; n++) {
+    const div = document.createElement('div');
+    div.className = 'agent-line';
+    div.textContent = lines[n];
+    linesBox.appendChild(div);
+  }
+  if (state.phase === 'agent') {
+    typeLines(lines, doneCount);
+  } else {
+    showChecks(resume);
+  }
+}
+
+function typeLines(lines, from) {
+  if (from >= lines.length) { state.phase = 'checks'; state.checkIdx = 0; showChecks(false); return; }
+  const linesBox = $('#agentLines');
+  const div = document.createElement('div');
+  div.className = 'agent-line current';
+  linesBox.appendChild(div);
+  const text = lines[from];
+  if (RM()) {
+    div.textContent = text;
+    div.classList.remove('current');
+    state.lineIdx = from + 1;
+    typeLines(lines, from + 1);
+    return;
+  }
+  const caret = '<span class="caret" aria-hidden="true"></span>';
+  let pos = 0;
+  const step = () => {
+    pos++;
+    div.innerHTML = text.slice(0, pos).replace(/&/g, '&amp;').replace(/</g, '&lt;') + caret;
+    if (pos < text.length) later(step, 22);
+    else {
+      div.textContent = text;
+      div.classList.remove('current');
+      state.lineIdx = from + 1;
+      later(() => typeLines(lines, from + 1), 260);
+    }
+  };
+  later(step, 60);
+}
+
+function showChecks(resume) {
+  const valve = $('#checkValve');
+  const list = $('#checkList');
+  valve.hidden = false;
+  list.innerHTML = '';
+  const items = t('stageChecks')[state.stage];
+  items.forEach((label, n) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="tick" aria-hidden="true">✓</span><span>${label}</span>`;
+    if (n < state.checkIdx || state.phase === 'awaiting') li.classList.add('ok');
+    list.appendChild(li);
+  });
+  if (state.phase === 'awaiting') { showApprover(); return; }
+  const tick = () => {
+    if (state.checkIdx >= items.length) {
+      state.phase = 'awaiting';
+      showApprover();
+      renderPipeline();
+      return;
+    }
+    list.children[state.checkIdx].classList.add('ok');
+    state.checkIdx++;
+    later(tick, RM() ? 0 : 450);
+  };
+  later(tick, RM() ? 0 : 350);
+}
+
+function showApprover() {
+  const st = $('#jStatus');
+  if (st) st.hidden = false;
+  $('#approverCard').hidden = false;
+}
+
+function startTour() {
+  if (state.tourStarted) return;
+  state.tourStarted = true;
+  state.stage = 0;
+  state.phase = 'agent';
+  state.lineIdx = 0;
+  state.checkIdx = 0;
+  state.returning = false;
+  state.day = 1;
+  $('#btnStartTour').disabled = true;
+  renderJourneyDay();
+  renderPipeline();
+  renderJourney(false);
+}
+
+function approveStage() {
+  if (state.phase !== 'awaiting') return;
+  const i = state.stage;
+  state.audit.push({
+    roleKey: DEMO_DATA.approverRoles[i],
+    action: 'approve',
+    stageIdx: i,
+    time: DEMO_DATA.auditTimes[state.audit.length % DEMO_DATA.auditTimes.length]
+  });
+  state.approvedGates[i] = true;
+  state.returning = false;
+  if (i === 5) {
+    state.phase = 'done';
+    state.day = 7;
+  } else {
+    state.stage = i + 1;
+    state.phase = 'agent';
+    state.lineIdx = 0;
+    state.checkIdx = 0;
+    state.day = i + 2;
+  }
+  renderJourneyDay();
+  renderAudit();
+  renderPipeline();
+  renderJourney(false);
+}
+
+function returnStage() {
+  if (state.phase !== 'awaiting') return;
+  const i = state.stage;
+  state.audit.push({
+    roleKey: DEMO_DATA.approverRoles[i],
+    action: 'return',
+    stageIdx: i,
+    time: DEMO_DATA.auditTimes[state.audit.length % DEMO_DATA.auditTimes.length]
+  });
+  state.returning = true;
+  state.phase = 'agent';
+  state.lineIdx = 0;
+  renderAudit();
+  renderPipeline();
+  renderJourney(false);
+}
+
+function resetTour() {
+  clearTimers();
+  state.tourStarted = false;
+  state.stage = 0;
+  state.phase = 'idle';
+  state.lineIdx = 0;
+  state.checkIdx = 0;
+  state.returning = false;
+  state.day = 1;
+  state.approvedGates = [false, false, false, false, false, false];
+  state.audit = [];
+  $('#btnStartTour').disabled = false;
+  renderJourneyDay();
+  renderAudit();
+  renderPipeline();
+  renderJourney(false);
+}
+
+/* ---------- 6. الاختبار الصارم ---------- */
+function renderTests(keepState) {
+  const grid = $('#testsGrid');
+  grid.innerHTML = '';
+  t('testItems').forEach((label, n) => {
+    const el = document.createElement('div');
+    el.className = 'test-item' + (keepState && n < state.testsCount ? ' ok' : '');
+    el.innerHTML = `<span class="tick" aria-hidden="true">✓</span><span>${label}</span>`;
+    grid.appendChild(el);
+  });
+  if (!keepState) state.testsCount = 0;
+  updateTestsCounter();
+}
+function updateTestsCounter() {
+  const c = $('#testsCounter');
+  c.textContent = `${state.testsCount}/11`;
+  c.classList.toggle('all-pass', state.testsCount === 11);
+}
+function runTests() {
+  if (state.testsRunning) return;
+  state.testsRunning = true;
+  state.testsCount = 0;
+  renderTests(false);
+  /* مؤقّت مستقل عن مؤقّتات الجولة حتى لا يقطعه تبديل اللغة أو إعادة الضبط */
+  const step = () => {
+    const items = $$('.test-item');
+    if (state.testsCount >= items.length) { state.testsRunning = false; return; }
+    items[state.testsCount].classList.add('ok');
+    state.testsCount++;
+    updateTestsCounter();
+    setTimeout(step, RM() ? 0 : 280);
+  };
+  setTimeout(step, RM() ? 0 : 150);
+}
+
+/* ---------- 7. المؤشرات ---------- */
+function renderKpis() {
+  const grid = $('#kpiGrid');
+  grid.innerHTML = '';
+  DEMO_DATA.kpis.forEach((k, n) => {
+    const el = document.createElement('div');
+    el.className = 'kpi-card' + (k.goal ? ' kpi-goal' : '');
+    const shown = state.kpiShown ? k.value : 0;
+    el.innerHTML =
+      `<div class="kpi-value"><span class="kpi-num" data-target="${k.value}">${shown}</span> <small>${t('kpiUnits')[n]}</small></div>` +
+      `<div class="kpi-label">${t('kpiLabels')[n]}</div>`;
+    grid.appendChild(el);
+  });
+}
+function animateKpis() {
+  if (state.kpiShown) return;
+  state.kpiShown = true;
+  const nums = $$('.kpi-num');
+  if (RM()) { nums.forEach(el => { el.textContent = el.dataset.target; }); return; }
+  const dur = 1200;
+  const start = performance.now();
+  const frame = (now) => {
+    const p = Math.min(1, (now - start) / dur);
+    const ease = 1 - Math.pow(1 - p, 3);
+    nums.forEach(el => { el.textContent = Math.round(Number(el.dataset.target) * ease); });
+    if (p < 1) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+/* ---------- التهيئة ---------- */
+$('#langToggle').addEventListener('click', () => {
+  state.lang = state.lang === 'ar' ? 'en' : 'ar';
+  applyLang();
+});
+$('#ctaPipeline').addEventListener('click', () => {
+  $('#pipeline-section').scrollIntoView({ behavior: RM() ? 'auto' : 'smooth' });
+});
+$('#btnStartTour').addEventListener('click', startTour);
+$('#btnResetTour').addEventListener('click', resetTour);
+$('#journeyPanel').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  if (btn.dataset.act === 'approve') approveStage();
+  else returnStage();
+});
+$$('.valve-check').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $('#valveResult' + btn.dataset.valve).classList.add('show');
+  });
+});
+$('#btnRunTests').addEventListener('click', runTests);
+
+const kpiObserver = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (en.isIntersecting) { animateKpis(); kpiObserver.disconnect(); }
+  });
+}, { threshold: 0.3 });
+kpiObserver.observe($('#kpis'));
+
+applyLang();
+</script>
+</body>
+</html>
